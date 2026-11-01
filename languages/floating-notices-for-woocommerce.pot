@@ -1,0 +1,677 @@
+# Copyright (C) 2026 Eli Shvarzman
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Floating Notices for WooCommerce 1.1.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/floating-notices-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-01T13:51:42+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: floating-notices-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: floating-notices-for-woocommerce.php
+msgid "Floating Notices for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: floating-notices-for-woocommerce.php
+msgid "https://a-in.co.il/plugins/floating-notices/"
+msgstr ""
+
+#. Description of the plugin
+#: floating-notices-for-woocommerce.php
+msgid "Converts all WooCommerce notices into sleek, modern floating message boxes with smooth animations"
+msgstr ""
+
+#. Author of the plugin
+#: floating-notices-for-woocommerce.php
+msgid "Eli Shvarzman"
+msgstr ""
+
+#. Author URI of the plugin
+#: floating-notices-for-woocommerce.php
+msgid "https://a-in.co.il"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:126
+msgid "Floating Notices for WooCommerce requires WooCommerce to be installed and active."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:191
+msgid "Product Added to Cart"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:197
+msgid "Product Removed from Cart"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:203
+msgid "Cart Updated"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:209
+msgid "Cart Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:215
+msgid "Checkout Validation Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:221
+msgid "Payment Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:227
+msgid "Order Placed Successfully"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:233
+msgid "Coupon Applied"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:239
+msgid "Coupon Removed"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:245
+msgid "Invalid Coupon"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:251
+msgid "Low Stock Warning"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:257
+msgid "Out of Stock"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:263
+msgid "Product Options Required"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:269
+msgid "Added to Wishlist"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:275
+msgid "Account Updated"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:281
+msgid "Account Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:287
+msgid "Shipping Calculated"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:293
+msgid "General Information"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:299
+msgid "General Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:305
+msgid "General Warning"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1051
+#: floating-notices-for-woocommerce.php:1052
+msgid "Floating Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1156
+msgid "Settings saved!"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1165
+msgid "General"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1166
+msgid "Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1167
+msgid "Design"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1168
+msgid "Colors"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1169
+msgid "Typography"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1170
+#: floating-notices-for-woocommerce.php:1711
+msgid "Custom CSS"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1171
+msgid "Preview"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1179
+msgid "General Settings"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1184
+msgid "Enable Floating Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1188
+#: floating-notices-for-woocommerce.php:1227
+msgid "Yes"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1189
+#: floating-notices-for-woocommerce.php:1228
+msgid "No"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1196
+msgid "Notice Position"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1200
+msgid "Top Right"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1201
+msgid "Top Left"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1202
+msgid "Bottom Right"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1203
+msgid "Bottom Left"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1204
+msgid "Top Center"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1211
+msgid "Auto Dismiss Time (ms)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1217
+msgid "Time in milliseconds. Set to 0 to disable auto-dismiss."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1223
+msgid "Show Progress Bar"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1235
+msgid "Animation Style"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1239
+msgid "Slide"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1240
+msgid "Fade"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1241
+msgid "Bounce"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1242
+msgid "Zoom"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1249
+msgid "Mobile Position"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1253
+msgid "Top Full Width"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1254
+msgid "Bottom Full Width"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1255
+msgid "Same as Desktop"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1264
+msgid "Notification Management"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1265
+msgid "Control individual notifications, customize their behavior, and add custom notifications."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1274
+msgid "Cart Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1275
+msgid "Checkout Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1276
+msgid "Coupon Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1277
+msgid "Product Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1278
+msgid "Account Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1279
+msgid "Shipping Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1280
+msgid "Wishlist Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1281
+msgid "General Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1288
+msgid "Built-in Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1303
+#: floating-notices-for-woocommerce.php:1379
+msgid "Enabled"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1304
+msgid "Notification"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1305
+#: floating-notices-for-woocommerce.php:1381
+#: floating-notices-for-woocommerce.php:1459
+msgid "Type"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1306
+msgid "Timing"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1307
+msgid "Position"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1308
+#: floating-notices-for-woocommerce.php:1384
+#: floating-notices-for-woocommerce.php:1460
+msgid "Actions"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1336
+#: floating-notices-for-woocommerce.php:1342
+msgid "Default"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1337
+#: floating-notices-for-woocommerce.php:1343
+#: floating-notices-for-woocommerce.php:1526
+msgid "Custom"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1348
+#: floating-notices-for-woocommerce.php:1414
+msgid "Configure"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1363
+msgid "Auto-Detected Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1364
+msgid "Notifications automatically detected from 3rd party plugins (SUMO Reward Points, Gift Cards, Waitlist, etc.). These are captured as they appear on your site."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1368
+msgid "Scan for Plugins"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1380
+msgid "Notification Preview"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1382
+msgid "Source"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1383
+msgid "Times Seen"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1417
+#: floating-notices-for-woocommerce.php:1485
+msgid "Delete"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1426
+msgid "No notifications detected yet. Notifications from 3rd party plugins will appear here automatically when they are displayed on your site."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1433
+msgid "Custom Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1434
+msgid "Create custom notifications to display anywhere on your site."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1437
+msgid "+ Add Custom Notification"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1442
+msgid "How to Display Custom Notifications"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1443
+msgid "Using Shortcode:"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1445
+msgid "Or by name:"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1447
+msgid "Using JavaScript:"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1449
+msgid "Note: Copy the ID from the table below to use in your shortcode or JavaScript."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1456
+msgid "Name"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1457
+msgid "ID"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1458
+msgid "Message"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1482
+msgid "Edit"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1497
+msgid "Bulk Actions"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1499
+msgid "Enable All"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1502
+msgid "Disable All"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1505
+msgid "Reset to Defaults"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1513
+msgid "Design Settings"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1518
+msgid "Design Preset"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1522
+msgid "Modern Gradient"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1523
+msgid "Flat Design"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1524
+msgid "Minimal"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1525
+msgid "Glassmorphism"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1528
+msgid "Choose a design preset or select Custom to use your own colors"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1534
+msgid "Border Radius (px)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1546
+msgid "Padding (px)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1558
+msgid "Shadow Style"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1562
+#: floating-notices-for-woocommerce.php:1699
+msgid "None"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1563
+msgid "Small"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1564
+msgid "Medium"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1565
+msgid "Large"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1566
+msgid "Extra Large"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1575
+msgid "Color Settings"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1579
+msgid "Success Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1580
+msgid "Error Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1581
+msgid "Info Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1582
+msgid "Warning Notices"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1590
+msgid "Background Type"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1594
+msgid "Solid Color"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1595
+msgid "Gradient"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1602
+msgid "Background Color"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1609
+msgid "Gradient End Color"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1619
+msgid "Text Color"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1630
+msgid "Icon Background"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1636
+msgid "Use rgba values for transparency, e.g., rgba(255,255,255,0.2)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1646
+msgid "Typography Settings"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1651
+msgid "Font Family"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1655
+msgid "Theme Default"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1656
+msgid "System Font"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1657
+msgid "Helvetica"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1658
+msgid "Georgia"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1659
+msgid "Courier"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1660
+msgid "Inter"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1661
+msgid "Poppins"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1668
+msgid "Font Size (px)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1680
+msgid "Font Weight"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1684
+msgid "Light (300)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1685
+msgid "Normal (400)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1686
+msgid "Medium (500)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1687
+msgid "Semi Bold (600)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1688
+msgid "Bold (700)"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1695
+msgid "Text Transform"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1700
+msgid "UPPERCASE"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1701
+msgid "lowercase"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1702
+msgid "Capitalize"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1716
+msgid "Additional CSS"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1720
+msgid "Add custom CSS to override default styles. Use .floating-notice for the main container."
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1728
+msgid "Live Preview"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1731
+msgid "Click the buttons below to preview different notice types with your current settings:"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1734
+msgid "Preview Success"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1735
+msgid "Preview Error"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1736
+msgid "Preview Info"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1737
+msgid "Preview Warning"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1746
+msgid "Save All Settings"
+msgstr ""
+
+#: floating-notices-for-woocommerce.php:1759
+msgid "Settings"
+msgstr ""
+
+#. translators: %d: number of notifications found
+#: floating-notices-for-woocommerce.php:2132
+#, php-format
+msgid "%d notification(s) found and imported"
+msgstr ""
