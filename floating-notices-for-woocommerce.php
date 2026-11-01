@@ -5,7 +5,7 @@
  * Description: Converts all WooCommerce notices into sleek, modern floating message boxes with smooth animations
  * Version: 1.1.2
  * Author: Eli Shvarzman
- * Author URI: https://a-in.co.il
+ * Author URI: https://a-in.co.il/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: floating-notices-for-woocommerce

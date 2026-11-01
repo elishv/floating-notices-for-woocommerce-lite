@@ -1,5 +1,5 @@
 === Floating Notices for WooCommerce ===
-Contributors: elishvarzman
+Contributors: elis85
 Donate link: https://a-in.co.il/plugins/floating-notices/
 Tags: woocommerce, notices, notifications, toast, cart message
 Requires at least: 5.0
