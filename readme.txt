@@ -1,11 +1,11 @@
-=== Floating Notices for WooCommerce ===
+=== All-IN Floating Notices for WooCommerce ===
 Contributors: elis85
 Donate link: https://a-in.co.il/plugins/floating-notices/
 Tags: woocommerce, notices, notifications, toast, cart message
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 WC requires at least: 3.0
 WC tested up to: 11.2
 License: GPLv2 or later
@@ -15,7 +15,7 @@ Turn WooCommerce notices into floating, dismissible messages, with per-notice co
 
 == Description ==
 
-Floating Notices for WooCommerce replaces the standard WooCommerce message bars (added to cart, coupon applied, checkout errors and so on) with floating, dismissible messages with smooth animations. Control each notice type, add your own notifications, and style everything to match your store.
+All-IN Floating Notices for WooCommerce replaces the standard WooCommerce message bars (added to cart, coupon applied, checkout errors and so on) with floating, dismissible messages with smooth animations. Control each notice type, add your own notifications, and style everything to match your store.
 
 **Features**
 
@@ -24,22 +24,24 @@ Floating Notices for WooCommerce replaces the standard WooCommerce message bars 
 * **Auto-detection.** Notices from other plugins are detected while a store manager browses the shop, and listed in the admin so you can rename, restyle, retype or disable them. Storage is capped at 100 entries.
 * **Plugin scanner.** One-click import of known notification types from supported plugins (see the FAQ).
 * **Custom notifications.** Create your own notifications with display conditions (page type), trigger delay and position, and show them with a shortcode or JavaScript.
-* **Design controls.** Presets, colors and gradients per notice type, typography, border radius, padding, shadows, custom CSS and a live preview.
+* **Design controls.** Presets, colors and gradients per notice type, typography, border radius, padding, shadows and a live preview.
 * **Responsive and accessible.** Separate desktop and mobile positions, plus reduced-motion, high-contrast, dark-mode and print support. RTL ready.
 * No external services.
 
+All-IN Floating Notices for WooCommerce is an independent plugin by A-in (a-in.co.il). It is not affiliated with or endorsed by WooCommerce or Automattic.
+
 **Shortcode**
 
-`[wfn_show id="custom_xxx"]` or `[wfn_show name="My Notification"]`
+`[ainfn_show id="custom_xxx"]` or `[ainfn_show name="My Notification"]`
 
 **JavaScript**
 
-`WooFloatingNotices.displayCustomNotification('custom_xxx');`
+`AinfnFloatingNotices.displayCustomNotification('custom_xxx');`
 
 **Developer hooks**
 
-* `wfn_scanned_plugin_notifications` (filter): add or change the third-party notification definitions used by the plugin scanner.
-* `wfn_allow_guest_notice_detection` (filter, default `false`): let visitors who are not logged in report new notices for the admin list.
+* `ainfn_scanned_plugin_notifications` (filter): add or change the third-party notification definitions used by the plugin scanner.
+* `ainfn_allow_guest_notice_detection` (filter, default `false`): let visitors who are not logged in report new notices for the admin list.
 
 = More from A-in =
 
@@ -67,11 +69,11 @@ Coupon success messages are, and so are coupon errors that WooCommerce shows as 
 
 = Which plugins does the scanner know? =
 
-SUMO Reward Points, PW Gift Cards, SUMO Waitlist, YITH Wishlist, WooCommerce Subscriptions and WooCommerce Points and Rewards. Developers can add more with the `wfn_scanned_plugin_notifications` filter.
+SUMO Reward Points, PW Gift Cards, SUMO Waitlist, YITH Wishlist, WooCommerce Subscriptions and WooCommerce Points and Rewards. Developers can add more with the `ainfn_scanned_plugin_notifications` filter.
 
 = Can I add my own notifications? =
 
-Yes. Create them in the Custom Notifications tab and show them with the `[wfn_show]` shortcode or the JavaScript API.
+Yes. Create them in the Custom Notifications tab and show them with the `[ainfn_show]` shortcode or the JavaScript API.
 
 == Screenshots ==
 
@@ -83,8 +85,14 @@ Yes. Create them in the Custom Notifications tab and show them with the `[wfn_sh
 
 == Changelog ==
 
+= 1.2.0 =
+* Renamed to All-IN Floating Notices for WooCommerce (slug and text domain `all-in-floating-notices-for-woocommerce`).
+* Removed: the Custom CSS setting. Arbitrary CSS is no longer stored or printed; use the design settings or your theme's Additional CSS.
+* Changed: the `[ainfn_show]` shortcode queues its notice with `wp_add_inline_script()` on the enqueued front-end script instead of printing a `<script>` tag. The admin preview and copy-ID buttons no longer use inline `onclick` handlers.
+* Changed: every function, class, constant, option, transient, AJAX action, hook, shortcode, script handle and JavaScript global now uses the `ainfn` / `AINFN` / `AinfnFloatingNotices` prefix.
+
 = 1.1.2 =
-* Security: only store managers can add auto-detected notices (visitors can't add entries to the admin list any more). Developers can allow guests with the `wfn_allow_guest_notice_detection` filter.
+* Security: only store managers can add auto-detected notices (visitors can't add entries to the admin list any more). Developers can allow guests with the `ainfn_allow_guest_notice_detection` filter.
 * Fixed: all admin output is escaped (`esc_html_e`, `esc_attr`).
 * Added: readme.txt, GPL LICENSE file, translation template, `Requires Plugins: woocommerce`, Donate link, screenshots. The readme no longer says invalid-coupon errors are converted (WooCommerce shows them inline on the classic cart).
 * Fixed: the "Invalid Coupon" setting now works. Coupon errors that WooCommerce shows as a notice (for example "Sorry, it seems the coupon … is invalid - it has now been removed from your order.") use that setting. Before, they used "Coupon Removed" when the message mentioned "removed", and "General Error" otherwise. Errors WooCommerce shows inline next to the coupon field are unchanged.
@@ -94,6 +102,9 @@ Yes. Create them in the Custom Notifications tab and show them with the `[wfn_sh
 * See the repository history.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+New name and prefix (All-IN Floating Notices for WooCommerce). The Custom CSS setting is removed.
 
 = 1.1.2 =
 Hardening: auto-detection of notices now runs only for store managers.

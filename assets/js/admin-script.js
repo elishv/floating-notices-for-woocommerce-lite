@@ -1,44 +1,44 @@
 /**
- * Floating Notices for WooCommerce - Admin Script
+ * All-IN Floating Notices for WooCommerce - Admin Script
  */
 
 jQuery(document).ready(function($) {
     'use strict';
 
     // Tab navigation
-    $('.wfn-tab-nav a').on('click', function(e) {
+    $('.ainfn-tab-nav a').on('click', function(e) {
         e.preventDefault();
         var target = $(this).attr('href');
 
         // Remove active class from all tabs
-        $('.wfn-tab-nav a').removeClass('active');
+        $('.ainfn-tab-nav a').removeClass('active');
         $(this).addClass('active');
 
         // Remove active class from all tab content
-        $('.wfn-tab-content').removeClass('active');
+        $('.ainfn-tab-content').removeClass('active');
 
         // Add active class to target tab content
         $(target).addClass('active');
     });
 
     // Range sliders
-    $('#wfn_border_radius').on('input', function() {
+    $('#ainfn_border_radius').on('input', function() {
         $('#border_radius_value').text($(this).val() + 'px');
     });
 
-    $('#wfn_padding').on('input', function() {
+    $('#ainfn_padding').on('input', function() {
         $('#padding_value').text($(this).val() + 'px');
     });
 
-    $('#wfn_font_size').on('input', function() {
+    $('#ainfn_font_size').on('input', function() {
         $('#font_size_value').text($(this).val() + 'px');
     });
 
     // Background type toggle
-    $('.wfn-bg-type').on('change', function() {
+    $('.ainfn-bg-type').on('change', function() {
         var type = $(this).data('type');
         var bgType = $(this).val();
-        var $gradientField = $(this).closest('table').find('.wfn-gradient-color2');
+        var $gradientField = $(this).closest('table').find('.ainfn-gradient-color2');
 
         if (bgType === 'gradient') {
             $gradientField.show();
@@ -49,18 +49,18 @@ jQuery(document).ready(function($) {
 
     // Initialize color pickers
     if ($.fn.wpColorPicker) {
-        $('.wfn-color-picker').wpColorPicker();
-        $('.wfn-color-picker-alpha').wpColorPicker({
+        $('.ainfn-color-picker').wpColorPicker();
+        $('.ainfn-color-picker-alpha').wpColorPicker({
             palettes: ['rgba(255,255,255,0.2)', 'rgba(0,0,0,0.2)', 'rgba(255,255,255,0.1)', 'rgba(0,0,0,0.1)']
         });
     }
 
     // Notification Management Functions
-    var wfnNotificationConfig = {};
+    var ainfnNotificationConfig = {};
     var saveConfigTimeout = null;
 
     // Auto-save notification changes with debounce
-    $(document).on('change', '.wfn-notification-enabled, .wfn-notification-timing, .wfn-notification-position', function() {
+    $(document).on('change', '.ainfn-notification-enabled, .ainfn-notification-timing, .ainfn-notification-position', function() {
         clearTimeout(saveConfigTimeout);
         saveConfigTimeout = setTimeout(function() {
             saveNotificationConfig();
@@ -69,21 +69,21 @@ jQuery(document).ready(function($) {
 
     function saveNotificationConfig() {
         var config = {};
-        $('.wfn-notifications-table tbody tr[data-notification-key]').each(function() {
+        $('.ainfn-notifications-table tbody tr[data-notification-key]').each(function() {
             var key = $(this).data('notification-key');
             config[key] = {
-                enabled: $(this).find('.wfn-notification-enabled').is(':checked'),
-                timing: $(this).find('.wfn-notification-timing').val(),
-                position: $(this).find('.wfn-notification-position').val()
+                enabled: $(this).find('.ainfn-notification-enabled').is(':checked'),
+                timing: $(this).find('.ainfn-notification-timing').val(),
+                position: $(this).find('.ainfn-notification-position').val()
             };
         });
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_save_notification_config',
-                nonce: wfn_admin.nonce,
+                action: 'ainfn_save_notification_config',
+                nonce: ainfn_admin.nonce,
                 config: config
             },
             success: function(response) {
@@ -98,16 +98,16 @@ jQuery(document).ready(function($) {
     }
 
     // Handle detected notifications toggle
-    $(document).on('change', '.wfn-detected-notification-enabled', function() {
+    $(document).on('change', '.ainfn-detected-notification-enabled', function() {
         var hash = $(this).data('hash');
         var enabled = $(this).is(':checked');
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_update_detected_notification',
-                nonce: wfn_admin.nonce,
+                action: 'ainfn_update_detected_notification',
+                nonce: ainfn_admin.nonce,
                 hash: hash,
                 data: { enabled: enabled }
             },
@@ -120,24 +120,24 @@ jQuery(document).ready(function($) {
     });
 
     // Edit detected notification
-    $(document).on('click', '.wfn-edit-detected-notification', function() {
+    $(document).on('click', '.ainfn-edit-detected-notification', function() {
         var hash = $(this).data('hash');
         openDetectedNotificationModal(hash);
     });
 
     // Delete detected notification
-    $(document).on('click', '.wfn-delete-detected-notification', function() {
+    $(document).on('click', '.ainfn-delete-detected-notification', function() {
         if (!confirm('Are you sure you want to delete this detected notification?')) return;
 
         var hash = $(this).data('hash');
         var $row = $(this).closest('tr');
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_delete_detected_notification',
-                nonce: wfn_admin.nonce,
+                action: 'ainfn_delete_detected_notification',
+                nonce: ainfn_admin.nonce,
                 hash: hash
             },
             success: function(response) {
@@ -153,80 +153,80 @@ jQuery(document).ready(function($) {
         // Get notification data from the row
         var $row = $('tr[data-notification-hash="' + hash + '"]');
         var name = $row.find('strong').first().text();
-        var originalMessage = $row.find('.wfn-notification-preview').text();
+        var originalMessage = $row.find('.ainfn-notification-preview').text();
 
-        var $modal = $('<div class="wfn-modal"><div class="wfn-modal-content">' +
-            '<div class="wfn-modal-header"><span class="wfn-modal-close">&times;</span><h2>Configure Detected Notification</h2></div>' +
-            '<div class="wfn-modal-body">' +
-                '<div class="wfn-form-group"><label>Custom Name (optional)</label>' +
-                '<input type="text" id="wfn-detected-name" placeholder="Give this notification a custom name" /></div>' +
-                '<div class="wfn-form-group"><label>Custom Message (leave empty to use original)</label>' +
-                '<textarea id="wfn-detected-message" rows="3"></textarea>' +
-                '<small style="color: #666;" class="wfn-detected-original"></small></div>' +
-                '<div class="wfn-form-group"><label>Notification Type</label>' +
-                '<select id="wfn-detected-type">' +
+        var $modal = $('<div class="ainfn-modal"><div class="ainfn-modal-content">' +
+            '<div class="ainfn-modal-header"><span class="ainfn-modal-close">&times;</span><h2>Configure Detected Notification</h2></div>' +
+            '<div class="ainfn-modal-body">' +
+                '<div class="ainfn-form-group"><label>Custom Name (optional)</label>' +
+                '<input type="text" id="ainfn-detected-name" placeholder="Give this notification a custom name" /></div>' +
+                '<div class="ainfn-form-group"><label>Custom Message (leave empty to use original)</label>' +
+                '<textarea id="ainfn-detected-message" rows="3"></textarea>' +
+                '<small style="color: #666;" class="ainfn-detected-original"></small></div>' +
+                '<div class="ainfn-form-group"><label>Notification Type</label>' +
+                '<select id="ainfn-detected-type">' +
                     '<option value="">Keep Original</option>' +
                     '<option value="success">Success</option>' +
                     '<option value="error">Error</option>' +
                     '<option value="info">Info</option>' +
                     '<option value="warning">Warning</option>' +
                 '</select></div>' +
-                '<div class="wfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
-                '<input type="number" id="wfn-detected-timing" value="5000" min="0" step="1000" /></div>' +
-                '<div class="wfn-form-row">' +
-                    '<div class="wfn-form-group"><label>Desktop Position</label>' +
-                    '<select id="wfn-detected-desktop-pos">' +
+                '<div class="ainfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
+                '<input type="number" id="ainfn-detected-timing" value="5000" min="0" step="1000" /></div>' +
+                '<div class="ainfn-form-row">' +
+                    '<div class="ainfn-form-group"><label>Desktop Position</label>' +
+                    '<select id="ainfn-detected-desktop-pos">' +
                         '<option value="top-right">Top Right</option>' +
                         '<option value="top-left">Top Left</option>' +
                         '<option value="bottom-right">Bottom Right</option>' +
                         '<option value="bottom-left">Bottom Left</option>' +
                         '<option value="top-center">Top Center</option>' +
                     '</select></div>' +
-                    '<div class="wfn-form-group"><label>Mobile Position</label>' +
-                    '<select id="wfn-detected-mobile-pos">' +
+                    '<div class="ainfn-form-group"><label>Mobile Position</label>' +
+                    '<select id="ainfn-detected-mobile-pos">' +
                         '<option value="top-full">Top Full Width</option>' +
                         '<option value="bottom-full">Bottom Full Width</option>' +
                         '<option value="same">Same as Desktop</option>' +
                     '</select></div>' +
                 '</div>' +
             '</div>' +
-            '<div class="wfn-modal-footer">' +
-                '<button class="button button-secondary wfn-modal-cancel">Cancel</button>' +
-                '<button class="button button-primary wfn-modal-save-detected">Save</button>' +
+            '<div class="ainfn-modal-footer">' +
+                '<button class="button button-secondary ainfn-modal-cancel">Cancel</button>' +
+                '<button class="button button-primary ainfn-modal-save-detected">Save</button>' +
             '</div>' +
         '</div></div>');
 
         // Set text values via the DOM so quotes/HTML in messages can't break the markup
-        $modal.find('#wfn-detected-name').val(name);
-        $modal.find('#wfn-detected-message').attr('placeholder', originalMessage);
-        $modal.find('.wfn-detected-original').text('Original: ' + originalMessage);
-        $modal.find('.wfn-modal-save-detected').attr('data-hash', hash);
+        $modal.find('#ainfn-detected-name').val(name);
+        $modal.find('#ainfn-detected-message').attr('placeholder', originalMessage);
+        $modal.find('.ainfn-detected-original').text('Original: ' + originalMessage);
+        $modal.find('.ainfn-modal-save-detected').attr('data-hash', hash);
 
         $('body').append($modal);
         $modal.fadeIn();
 
-        $modal.find('.wfn-modal-close, .wfn-modal-cancel').on('click', function() {
+        $modal.find('.ainfn-modal-close, .ainfn-modal-cancel').on('click', function() {
             $modal.fadeOut(function() { $modal.remove(); });
         });
 
-        $modal.find('.wfn-modal-save-detected').on('click', function() {
+        $modal.find('.ainfn-modal-save-detected').on('click', function() {
             var data = {
-                custom_name: $('#wfn-detected-name').val(),
-                custom_message: $('#wfn-detected-message').val(),
-                custom_type: $('#wfn-detected-type').val(),
+                custom_name: $('#ainfn-detected-name').val(),
+                custom_message: $('#ainfn-detected-message').val(),
+                custom_type: $('#ainfn-detected-type').val(),
                 timing: 'custom',
-                auto_dismiss: parseInt($('#wfn-detected-timing').val()),
+                auto_dismiss: parseInt($('#ainfn-detected-timing').val()),
                 position: 'custom',
-                desktop_position: $('#wfn-detected-desktop-pos').val(),
-                mobile_position: $('#wfn-detected-mobile-pos').val()
+                desktop_position: $('#ainfn-detected-desktop-pos').val(),
+                mobile_position: $('#ainfn-detected-mobile-pos').val()
             };
 
             $.ajax({
-                url: wfn_admin.ajax_url,
+                url: ainfn_admin.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wfn_update_detected_notification',
-                    nonce: wfn_admin.nonce,
+                    action: 'ainfn_update_detected_notification',
+                    nonce: ainfn_admin.nonce,
                     hash: hash,
                     data: data
                 },
@@ -243,7 +243,7 @@ jQuery(document).ready(function($) {
     }
 
     // Configure notification (modal)
-    $(document).on('click', '.wfn-edit-notification', function() {
+    $(document).on('click', '.ainfn-edit-notification', function() {
         var key = $(this).data('key');
         openNotificationConfigModal(key);
     });
@@ -251,41 +251,41 @@ jQuery(document).ready(function($) {
     function openNotificationConfigModal(key) {
         // Get current configuration for this notification
         var $row = $('tr[data-notification-key="' + key + '"]');
-        var timing = $row.find('.wfn-notification-timing').val();
-        var position = $row.find('.wfn-notification-position').val();
+        var timing = $row.find('.ainfn-notification-timing').val();
+        var position = $row.find('.ainfn-notification-position').val();
 
-        var $modal = $('<div class="wfn-modal"><div class="wfn-modal-content">' +
-            '<div class="wfn-modal-header"><span class="wfn-modal-close">&times;</span><h2>Configure Notification</h2></div>' +
-            '<div class="wfn-modal-body">' +
-                '<div class="wfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
-                '<input type="number" id="wfn-modal-timing" value="5000" min="0" step="1000" /></div>' +
-                '<div class="wfn-form-row">' +
-                    '<div class="wfn-form-group"><label>Desktop Position</label>' +
-                    '<select id="wfn-modal-desktop-pos">' +
+        var $modal = $('<div class="ainfn-modal"><div class="ainfn-modal-content">' +
+            '<div class="ainfn-modal-header"><span class="ainfn-modal-close">&times;</span><h2>Configure Notification</h2></div>' +
+            '<div class="ainfn-modal-body">' +
+                '<div class="ainfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
+                '<input type="number" id="ainfn-modal-timing" value="5000" min="0" step="1000" /></div>' +
+                '<div class="ainfn-form-row">' +
+                    '<div class="ainfn-form-group"><label>Desktop Position</label>' +
+                    '<select id="ainfn-modal-desktop-pos">' +
                         '<option value="top-right">Top Right</option>' +
                         '<option value="top-left">Top Left</option>' +
                         '<option value="bottom-right">Bottom Right</option>' +
                         '<option value="bottom-left">Bottom Left</option>' +
                         '<option value="top-center">Top Center</option>' +
                     '</select></div>' +
-                    '<div class="wfn-form-group"><label>Mobile Position</label>' +
-                    '<select id="wfn-modal-mobile-pos">' +
+                    '<div class="ainfn-form-group"><label>Mobile Position</label>' +
+                    '<select id="ainfn-modal-mobile-pos">' +
                         '<option value="top-full">Top Full Width</option>' +
                         '<option value="bottom-full">Bottom Full Width</option>' +
                         '<option value="same">Same as Desktop</option>' +
                     '</select></div>' +
                 '</div>' +
-                '<div class="wfn-form-group"><label>Animation Style</label>' +
-                '<select id="wfn-modal-animation">' +
+                '<div class="ainfn-form-group"><label>Animation Style</label>' +
+                '<select id="ainfn-modal-animation">' +
                     '<option value="slide">Slide</option>' +
                     '<option value="fade">Fade</option>' +
                     '<option value="bounce">Bounce</option>' +
                     '<option value="zoom">Zoom</option>' +
                 '</select></div>' +
             '</div>' +
-            '<div class="wfn-modal-footer">' +
-                '<button class="button button-secondary wfn-modal-cancel">Cancel</button>' +
-                '<button class="button button-primary wfn-modal-save" data-key="' + key + '">Save Configuration</button>' +
+            '<div class="ainfn-modal-footer">' +
+                '<button class="button button-secondary ainfn-modal-cancel">Cancel</button>' +
+                '<button class="button button-primary ainfn-modal-save" data-key="' + key + '">Save Configuration</button>' +
             '</div>' +
         '</div></div>');
 
@@ -293,53 +293,53 @@ jQuery(document).ready(function($) {
         $modal.fadeIn();
 
         // Auto-set timing and position to custom when opening modal
-        $row.find('.wfn-notification-timing').val('custom');
-        $row.find('.wfn-notification-position').val('custom');
+        $row.find('.ainfn-notification-timing').val('custom');
+        $row.find('.ainfn-notification-position').val('custom');
 
-        $modal.find('.wfn-modal-close, .wfn-modal-cancel').on('click', function() {
+        $modal.find('.ainfn-modal-close, .ainfn-modal-cancel').on('click', function() {
             $modal.fadeOut(function() { $modal.remove(); });
         });
 
-        $modal.find('.wfn-modal-save').on('click', function() {
+        $modal.find('.ainfn-modal-save').on('click', function() {
             var key = $(this).data('key');
             var config = {
                 timing: 'custom',
-                auto_dismiss: parseInt($('#wfn-modal-timing').val()),
+                auto_dismiss: parseInt($('#ainfn-modal-timing').val()),
                 position: 'custom',
-                desktop_position: $('#wfn-modal-desktop-pos').val(),
-                mobile_position: $('#wfn-modal-mobile-pos').val(),
+                desktop_position: $('#ainfn-modal-desktop-pos').val(),
+                mobile_position: $('#ainfn-modal-mobile-pos').val(),
                 animation: 'custom',
-                animation_style: $('#wfn-modal-animation').val()
+                animation_style: $('#ainfn-modal-animation').val()
             };
 
             // Update the row
-            $row.find('.wfn-notification-timing').val('custom');
-            $row.find('.wfn-notification-position').val('custom');
+            $row.find('.ainfn-notification-timing').val('custom');
+            $row.find('.ainfn-notification-position').val('custom');
 
             // Build full config and save
             var fullConfig = {};
-            $('.wfn-notifications-table tbody tr[data-notification-key]').each(function() {
+            $('.ainfn-notifications-table tbody tr[data-notification-key]').each(function() {
                 var k = $(this).data('notification-key');
                 if (k === key) {
                     fullConfig[k] = Object.assign({
-                        enabled: $(this).find('.wfn-notification-enabled').is(':checked')
+                        enabled: $(this).find('.ainfn-notification-enabled').is(':checked')
                     }, config);
                 } else {
                     fullConfig[k] = {
-                        enabled: $(this).find('.wfn-notification-enabled').is(':checked'),
-                        timing: $(this).find('.wfn-notification-timing').val(),
-                        position: $(this).find('.wfn-notification-position').val()
+                        enabled: $(this).find('.ainfn-notification-enabled').is(':checked'),
+                        timing: $(this).find('.ainfn-notification-timing').val(),
+                        position: $(this).find('.ainfn-notification-position').val()
                     };
                 }
             });
 
             // Save via AJAX
             $.ajax({
-                url: wfn_admin.ajax_url,
+                url: ainfn_admin.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wfn_save_notification_config',
-                    nonce: wfn_admin.nonce,
+                    action: 'ainfn_save_notification_config',
+                    nonce: ainfn_admin.nonce,
                     config: fullConfig
                 },
                 success: function(response) {
@@ -354,14 +354,14 @@ jQuery(document).ready(function($) {
     }
 
     // Add custom notification
-    $(document).on('click', '.wfn-add-custom-notification', function() {
+    $(document).on('click', '.ainfn-add-custom-notification', function() {
         openCustomNotificationModal();
     });
 
     // Edit custom notification
-    $(document).on('click', '.wfn-edit-custom-notification', function() {
+    $(document).on('click', '.ainfn-edit-custom-notification', function() {
         var id = $(this).data('id');
-        var data = (wfn_admin.custom_notifications || {})[id];
+        var data = (ainfn_admin.custom_notifications || {})[id];
         if (!data) {
             alert('Could not load notification data. Please reload the page and try again.');
             return;
@@ -371,40 +371,40 @@ jQuery(document).ready(function($) {
 
     function openCustomNotificationModal(editId, editData) {
         var isEdit = !!editId;
-        var $modal = $('<div class="wfn-modal"><div class="wfn-modal-content">' +
-            '<div class="wfn-modal-header"><span class="wfn-modal-close">&times;</span><h2>' + (isEdit ? 'Edit' : 'Add') + ' Custom Notification</h2></div>' +
-            '<div class="wfn-modal-body">' +
-                '<div class="wfn-form-group"><label>Notification Name</label>' +
-                '<input type="text" id="wfn-custom-name" placeholder="e.g., Welcome Message" /></div>' +
-                '<div class="wfn-form-group"><label>Message</label>' +
-                '<textarea id="wfn-custom-message" placeholder="Enter your custom message..."></textarea></div>' +
-                '<div class="wfn-form-row">' +
-                    '<div class="wfn-form-group"><label>Type</label>' +
-                    '<select id="wfn-custom-type">' +
+        var $modal = $('<div class="ainfn-modal"><div class="ainfn-modal-content">' +
+            '<div class="ainfn-modal-header"><span class="ainfn-modal-close">&times;</span><h2>' + (isEdit ? 'Edit' : 'Add') + ' Custom Notification</h2></div>' +
+            '<div class="ainfn-modal-body">' +
+                '<div class="ainfn-form-group"><label>Notification Name</label>' +
+                '<input type="text" id="ainfn-custom-name" placeholder="e.g., Welcome Message" /></div>' +
+                '<div class="ainfn-form-group"><label>Message</label>' +
+                '<textarea id="ainfn-custom-message" placeholder="Enter your custom message..."></textarea></div>' +
+                '<div class="ainfn-form-row">' +
+                    '<div class="ainfn-form-group"><label>Type</label>' +
+                    '<select id="ainfn-custom-type">' +
                         '<option value="success">Success</option>' +
                         '<option value="error">Error</option>' +
                         '<option value="info">Info</option>' +
                         '<option value="warning">Warning</option>' +
                     '</select></div>' +
-                    '<div class="wfn-form-group"><label>Category</label>' +
-                    '<select id="wfn-custom-category">' +
+                    '<div class="ainfn-form-group"><label>Category</label>' +
+                    '<select id="ainfn-custom-category">' +
                         '<option value="general">General</option>' +
                         '<option value="custom">Custom</option>' +
                     '</select></div>' +
                 '</div>' +
-                '<div class="wfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
-                '<input type="number" id="wfn-custom-timing" value="5000" min="0" step="1000" /></div>' +
-                '<div class="wfn-form-row">' +
-                    '<div class="wfn-form-group"><label>Desktop Position</label>' +
-                    '<select id="wfn-custom-desktop-pos">' +
+                '<div class="ainfn-form-group"><label>Auto-Dismiss Time (ms, 0 = never)</label>' +
+                '<input type="number" id="ainfn-custom-timing" value="5000" min="0" step="1000" /></div>' +
+                '<div class="ainfn-form-row">' +
+                    '<div class="ainfn-form-group"><label>Desktop Position</label>' +
+                    '<select id="ainfn-custom-desktop-pos">' +
                         '<option value="top-right">Top Right</option>' +
                         '<option value="top-left">Top Left</option>' +
                         '<option value="bottom-right">Bottom Right</option>' +
                         '<option value="bottom-left">Bottom Left</option>' +
                         '<option value="top-center">Top Center</option>' +
                     '</select></div>' +
-                    '<div class="wfn-form-group"><label>Mobile Position</label>' +
-                    '<select id="wfn-custom-mobile-pos">' +
+                    '<div class="ainfn-form-group"><label>Mobile Position</label>' +
+                    '<select id="ainfn-custom-mobile-pos">' +
                         '<option value="top-full">Top Full Width</option>' +
                         '<option value="bottom-full">Bottom Full Width</option>' +
                         '<option value="same">Same as Desktop</option>' +
@@ -412,8 +412,8 @@ jQuery(document).ready(function($) {
                 '</div>' +
                 '<hr style="margin: 20px 0;">' +
                 '<h4 style="margin-bottom: 15px;">Display Conditions</h4>' +
-                '<div class="wfn-form-group"><label>Show On</label>' +
-                '<select id="wfn-custom-show-on">' +
+                '<div class="ainfn-form-group"><label>Show On</label>' +
+                '<select id="ainfn-custom-show-on">' +
                     '<option value="all">All Pages</option>' +
                     '<option value="shop">Shop/Archive Pages</option>' +
                     '<option value="product">Product Pages</option>' +
@@ -422,47 +422,47 @@ jQuery(document).ready(function($) {
                     '<option value="account">My Account</option>' +
                     '<option value="home">Homepage Only</option>' +
                 '</select></div>' +
-                '<div class="wfn-form-group"><label>Trigger Delay (ms, 0 = immediate)</label>' +
-                '<input type="number" id="wfn-custom-delay" value="0" min="0" step="500" />' +
+                '<div class="ainfn-form-group"><label>Trigger Delay (ms, 0 = immediate)</label>' +
+                '<input type="number" id="ainfn-custom-delay" value="0" min="0" step="500" />' +
                 '<small style="color: #666;">Delay before showing notification after page load</small></div>' +
             '</div>' +
-            '<div class="wfn-modal-footer">' +
-                '<button class="button button-secondary wfn-modal-cancel">Cancel</button>' +
-                '<button class="button button-primary wfn-modal-save-custom">Save Notification</button>' +
+            '<div class="ainfn-modal-footer">' +
+                '<button class="button button-secondary ainfn-modal-cancel">Cancel</button>' +
+                '<button class="button button-primary ainfn-modal-save-custom">Save Notification</button>' +
             '</div>' +
         '</div></div>');
 
         // Prefill values via the DOM so quotes/HTML can't break the markup
         if (editData) {
-            $modal.find('#wfn-custom-name').val(editData.name || '');
-            $modal.find('#wfn-custom-message').val(editData.message || '');
-            $modal.find('#wfn-custom-type').val(editData.type || 'success');
-            $modal.find('#wfn-custom-category').val(editData.category || 'general');
-            $modal.find('#wfn-custom-timing').val(editData.auto_dismiss !== undefined ? editData.auto_dismiss : 5000);
-            $modal.find('#wfn-custom-desktop-pos').val(editData.desktop_position || 'top-right');
-            $modal.find('#wfn-custom-mobile-pos').val(editData.mobile_position || 'top-full');
-            $modal.find('#wfn-custom-show-on').val(editData.show_on || 'all');
-            $modal.find('#wfn-custom-delay').val(editData.trigger_delay || 0);
+            $modal.find('#ainfn-custom-name').val(editData.name || '');
+            $modal.find('#ainfn-custom-message').val(editData.message || '');
+            $modal.find('#ainfn-custom-type').val(editData.type || 'success');
+            $modal.find('#ainfn-custom-category').val(editData.category || 'general');
+            $modal.find('#ainfn-custom-timing').val(editData.auto_dismiss !== undefined ? editData.auto_dismiss : 5000);
+            $modal.find('#ainfn-custom-desktop-pos').val(editData.desktop_position || 'top-right');
+            $modal.find('#ainfn-custom-mobile-pos').val(editData.mobile_position || 'top-full');
+            $modal.find('#ainfn-custom-show-on').val(editData.show_on || 'all');
+            $modal.find('#ainfn-custom-delay').val(editData.trigger_delay || 0);
         }
 
         $('body').append($modal);
         $modal.fadeIn();
 
-        $modal.find('.wfn-modal-close, .wfn-modal-cancel').on('click', function() {
+        $modal.find('.ainfn-modal-close, .ainfn-modal-cancel').on('click', function() {
             $modal.fadeOut(function() { $modal.remove(); });
         });
 
-        $modal.find('.wfn-modal-save-custom').on('click', function() {
+        $modal.find('.ainfn-modal-save-custom').on('click', function() {
             var notification = {
-                name: $('#wfn-custom-name').val(),
-                message: $('#wfn-custom-message').val(),
-                type: $('#wfn-custom-type').val(),
-                category: $('#wfn-custom-category').val(),
-                auto_dismiss: parseInt($('#wfn-custom-timing').val()) || 0,
-                desktop_position: $('#wfn-custom-desktop-pos').val(),
-                mobile_position: $('#wfn-custom-mobile-pos').val(),
-                show_on: $('#wfn-custom-show-on').val(),
-                trigger_delay: parseInt($('#wfn-custom-delay').val()) || 0
+                name: $('#ainfn-custom-name').val(),
+                message: $('#ainfn-custom-message').val(),
+                type: $('#ainfn-custom-type').val(),
+                category: $('#ainfn-custom-category').val(),
+                auto_dismiss: parseInt($('#ainfn-custom-timing').val()) || 0,
+                desktop_position: $('#ainfn-custom-desktop-pos').val(),
+                mobile_position: $('#ainfn-custom-mobile-pos').val(),
+                show_on: $('#ainfn-custom-show-on').val(),
+                trigger_delay: parseInt($('#ainfn-custom-delay').val()) || 0
             };
 
             if (!notification.name || !notification.message) {
@@ -471,8 +471,8 @@ jQuery(document).ready(function($) {
             }
 
             var data = {
-                action: isEdit ? 'wfn_update_custom_notification' : 'wfn_add_custom_notification',
-                nonce: wfn_admin.nonce,
+                action: isEdit ? 'ainfn_update_custom_notification' : 'ainfn_add_custom_notification',
+                nonce: ainfn_admin.nonce,
                 notification: notification
             };
             if (isEdit) {
@@ -480,7 +480,7 @@ jQuery(document).ready(function($) {
             }
 
             $.ajax({
-                url: wfn_admin.ajax_url,
+                url: ainfn_admin.ajax_url,
                 type: 'POST',
                 data: data,
                 success: function(response) {
@@ -501,18 +501,18 @@ jQuery(document).ready(function($) {
     }
 
     // Delete custom notification
-    $(document).on('click', '.wfn-delete-custom-notification', function() {
+    $(document).on('click', '.ainfn-delete-custom-notification', function() {
         if (!confirm('Are you sure you want to delete this custom notification?')) return;
 
         var id = $(this).data('id');
         var $row = $(this).closest('tr');
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_delete_custom_notification',
-                nonce: wfn_admin.nonce,
+                action: 'ainfn_delete_custom_notification',
+                nonce: ainfn_admin.nonce,
                 notification_id: id
             },
             success: function(response) {
@@ -525,7 +525,7 @@ jQuery(document).ready(function($) {
     });
 
     // Scan for plugins
-    $(document).on('click', '.wfn-scan-plugins', function() {
+    $(document).on('click', '.ainfn-scan-plugins', function() {
         var $button = $(this);
         var $icon = $button.find('.dashicons');
         var originalText = $button.html();
@@ -535,11 +535,11 @@ jQuery(document).ready(function($) {
         $button.html('<span class="dashicons dashicons-update rotating" style="vertical-align: middle;"></span> Scanning...');
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_scan_plugins',
-                nonce: wfn_admin.nonce
+                action: 'ainfn_scan_plugins',
+                nonce: ainfn_admin.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -565,23 +565,23 @@ jQuery(document).ready(function($) {
     });
 
     // Bulk actions
-    $('.wfn-enable-all-notifications').on('click', function() {
-        $('.wfn-notification-enabled').prop('checked', true).trigger('change');
+    $('.ainfn-enable-all-notifications').on('click', function() {
+        $('.ainfn-notification-enabled').prop('checked', true).trigger('change');
     });
 
-    $('.wfn-disable-all-notifications').on('click', function() {
-        $('.wfn-notification-enabled').prop('checked', false).trigger('change');
+    $('.ainfn-disable-all-notifications').on('click', function() {
+        $('.ainfn-notification-enabled').prop('checked', false).trigger('change');
     });
 
-    $('.wfn-reset-all-notifications').on('click', function() {
+    $('.ainfn-reset-all-notifications').on('click', function() {
         if (!confirm('Are you sure you want to reset all notifications to default settings?')) return;
 
         $.ajax({
-            url: wfn_admin.ajax_url,
+            url: ainfn_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wfn_save_notification_config',
-                nonce: wfn_admin.nonce,
+                action: 'ainfn_save_notification_config',
+                nonce: ainfn_admin.nonce,
                 reset: 1
             },
             success: function(response) {
@@ -600,7 +600,7 @@ jQuery(document).ready(function($) {
 
     function showAdminNotice(message, type) {
         var $notice = $('<div class="notice notice-' + type + ' is-dismissible"><p>' + message + '</p></div>');
-        $('.wfn-admin-wrap h1').after($notice);
+        $('.ainfn-admin-wrap h1').after($notice);
         setTimeout(function() {
             $notice.fadeOut(function() { $(this).remove(); });
         }, 3000);
@@ -608,7 +608,7 @@ jQuery(document).ready(function($) {
 
     // Preview notice function - renders a real notice in the preview area
     // using the same markup and styles as the storefront.
-    window.wfnPreviewNotice = function(type) {
+    window.ainfnPreviewNotice = function(type) {
         var messages = {
             success: 'Product successfully added to your cart! <a href="#">View Cart</a>',
             error: 'Please select product options before adding to cart.',
@@ -623,7 +623,7 @@ jQuery(document).ready(function($) {
             warning: '<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>'
         };
 
-        var animation = $('#wfn_animation').val() || 'slide';
+        var animation = $('#ainfn_animation').val() || 'slide';
         var $notice = $(
             '<div class="floating-notice ' + type + ' animation-' + animation + '">' +
                 '<div class="floating-notice-icon">' + icons[type] + '</div>' +
@@ -638,10 +638,10 @@ jQuery(document).ready(function($) {
             $notice.remove();
         });
 
-        $('#wfn-preview-area').append($notice);
+        $('#ainfn-preview-area').append($notice);
 
         // Auto-dismiss the preview using the configured dismiss time
-        var autoDismiss = parseInt($('#wfn_auto_dismiss').val()) || 5000;
+        var autoDismiss = parseInt($('#ainfn_auto_dismiss').val()) || 5000;
         if (autoDismiss > 0) {
             setTimeout(function() {
                 $notice.addClass('removing');
@@ -649,4 +649,20 @@ jQuery(document).ready(function($) {
             }, autoDismiss);
         }
     };
+
+    // Preview buttons (no inline onclick handlers).
+    $(document).on('click', '[data-ainfn-preview]', function() {
+        window.ainfnPreviewNotice(String($(this).data('ainfn-preview')));
+    });
+
+    // Click a notification ID to copy it.
+    $(document).on('click', '.ainfn-copy-id', function() {
+        var $el = $(this);
+        var id = String($el.data('ainfn-copy'));
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(id);
+        }
+        $el.css('background', '#d4edda');
+        setTimeout(function() { $el.css('background', '#f5f5f5'); }, 1000);
+    });
 });
