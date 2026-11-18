@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Floating Notices for WooCommerce
+ * Plugin Name: All-IN Floating Notices for WooCommerce
  * Plugin URI: https://a-in.co.il/plugins/floating-notices/
  * Description: Converts all WooCommerce notices into sleek, modern floating message boxes with smooth animations
- * Version: 1.1.2
+ * Version: 1.2.0
  * Author: Eli Shvarzman
  * Author URI: https://a-in.co.il/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: floating-notices-for-woocommerce
+ * Text Domain: all-in-floating-notices-for-woocommerce
  * Domain Path: /languages
  * Requires at least: 5.0
  * Requires PHP: 7.2
@@ -23,15 +23,15 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WFN_VERSION', '1.1.2');
-define('WFN_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('WFN_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('WFN_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('AINFN_VERSION', '1.2.0');
+define('AINFN_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('AINFN_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('AINFN_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
 /**
  * Main plugin class
  */
-class WooCommerce_Floating_Notices {
+class AINFN_Floating_Notices {
     
     /**
      * Maximum number of auto-detected notifications kept in the database.
@@ -89,25 +89,25 @@ class WooCommerce_Floating_Notices {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
-        add_action('plugin_action_links_' . WFN_PLUGIN_BASENAME, array($this, 'add_action_links'));
+        add_action('plugin_action_links_' . AINFN_PLUGIN_BASENAME, array($this, 'add_action_links'));
         
         // Add AJAX handlers for customization
-        add_action('wp_ajax_wfn_save_settings', array($this, 'ajax_save_settings'));
-        add_action('wp_ajax_wfn_save_notification_config', array($this, 'ajax_save_notification_config'));
-        add_action('wp_ajax_wfn_add_custom_notification', array($this, 'ajax_add_custom_notification'));
-        add_action('wp_ajax_wfn_update_custom_notification', array($this, 'ajax_update_custom_notification'));
-        add_action('wp_ajax_wfn_delete_custom_notification', array($this, 'ajax_delete_custom_notification'));
-        add_action('wp_ajax_wfn_save_detected_notification', array($this, 'ajax_save_detected_notification'));
+        add_action('wp_ajax_ainfn_save_settings', array($this, 'ajax_save_settings'));
+        add_action('wp_ajax_ainfn_save_notification_config', array($this, 'ajax_save_notification_config'));
+        add_action('wp_ajax_ainfn_add_custom_notification', array($this, 'ajax_add_custom_notification'));
+        add_action('wp_ajax_ainfn_update_custom_notification', array($this, 'ajax_update_custom_notification'));
+        add_action('wp_ajax_ainfn_delete_custom_notification', array($this, 'ajax_delete_custom_notification'));
+        add_action('wp_ajax_ainfn_save_detected_notification', array($this, 'ajax_save_detected_notification'));
         // Guests are rejected in the handler unless a developer opts in (see can_detect_notifications()).
-        add_action('wp_ajax_nopriv_wfn_save_detected_notification', array($this, 'ajax_save_detected_notification'));
-        add_action('wp_ajax_wfn_update_detected_notification', array($this, 'ajax_update_detected_notification'));
-        add_action('wp_ajax_wfn_delete_detected_notification', array($this, 'ajax_delete_detected_notification'));
-        add_action('wp_ajax_wfn_scan_plugins', array($this, 'ajax_scan_plugins'));
-        add_action('wp_ajax_wfn_show_custom_notification', array($this, 'ajax_show_custom_notification'));
-        add_action('wp_ajax_nopriv_wfn_show_custom_notification', array($this, 'ajax_show_custom_notification'));
+        add_action('wp_ajax_nopriv_ainfn_save_detected_notification', array($this, 'ajax_save_detected_notification'));
+        add_action('wp_ajax_ainfn_update_detected_notification', array($this, 'ajax_update_detected_notification'));
+        add_action('wp_ajax_ainfn_delete_detected_notification', array($this, 'ajax_delete_detected_notification'));
+        add_action('wp_ajax_ainfn_scan_plugins', array($this, 'ajax_scan_plugins'));
+        add_action('wp_ajax_ainfn_show_custom_notification', array($this, 'ajax_show_custom_notification'));
+        add_action('wp_ajax_nopriv_ainfn_show_custom_notification', array($this, 'ajax_show_custom_notification'));
 
         // Register shortcode for custom notifications
-        add_shortcode('wfn_show', array($this, 'shortcode_show_notification'));
+        add_shortcode('ainfn_show', array($this, 'shortcode_show_notification'));
     }
     
     /**
@@ -123,7 +123,7 @@ class WooCommerce_Floating_Notices {
     public function woocommerce_missing_notice() {
         ?>
         <div class="notice notice-error">
-            <p><?php esc_html_e('Floating Notices for WooCommerce requires WooCommerce to be installed and active.', 'floating-notices-for-woocommerce'); ?></p>
+            <p><?php esc_html_e('All-IN Floating Notices for WooCommerce requires WooCommerce to be installed and active.', 'all-in-floating-notices-for-woocommerce'); ?></p>
         </div>
         <?php
     }
@@ -175,11 +175,12 @@ class WooCommerce_Floating_Notices {
             'warning_text_color' => '#ffffff',
             'warning_icon_bg' => 'rgba(255,255,255,0.2)',
 
-            'custom_css' => '',
         );
 
-        $saved_settings = get_option('wfn_settings', array());
+        $saved_settings = get_option('ainfn_settings', array());
         $this->settings = wp_parse_args($saved_settings, $defaults);
+        // Arbitrary custom CSS is not supported (removed in 1.2.0); never carry it over.
+        unset($this->settings['custom_css']);
     }
 
     /**
@@ -188,121 +189,121 @@ class WooCommerce_Floating_Notices {
     public function get_notification_types() {
         return array(
             'cart_add' => array(
-                'name' => __('Product Added to Cart', 'floating-notices-for-woocommerce'),
+                'name' => __('Product Added to Cart', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'cart',
                 'default_enabled' => true,
             ),
             'cart_remove' => array(
-                'name' => __('Product Removed from Cart', 'floating-notices-for-woocommerce'),
+                'name' => __('Product Removed from Cart', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'info',
                 'category' => 'cart',
                 'default_enabled' => true,
             ),
             'cart_update' => array(
-                'name' => __('Cart Updated', 'floating-notices-for-woocommerce'),
+                'name' => __('Cart Updated', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'cart',
                 'default_enabled' => true,
             ),
             'cart_error' => array(
-                'name' => __('Cart Error', 'floating-notices-for-woocommerce'),
+                'name' => __('Cart Error', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'cart',
                 'default_enabled' => true,
             ),
             'checkout_validation' => array(
-                'name' => __('Checkout Validation Error', 'floating-notices-for-woocommerce'),
+                'name' => __('Checkout Validation Error', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'checkout',
                 'default_enabled' => true,
             ),
             'checkout_payment_error' => array(
-                'name' => __('Payment Error', 'floating-notices-for-woocommerce'),
+                'name' => __('Payment Error', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'checkout',
                 'default_enabled' => true,
             ),
             'order_success' => array(
-                'name' => __('Order Placed Successfully', 'floating-notices-for-woocommerce'),
+                'name' => __('Order Placed Successfully', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'checkout',
                 'default_enabled' => true,
             ),
             'coupon_applied' => array(
-                'name' => __('Coupon Applied', 'floating-notices-for-woocommerce'),
+                'name' => __('Coupon Applied', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'coupon',
                 'default_enabled' => true,
             ),
             'coupon_removed' => array(
-                'name' => __('Coupon Removed', 'floating-notices-for-woocommerce'),
+                'name' => __('Coupon Removed', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'info',
                 'category' => 'coupon',
                 'default_enabled' => true,
             ),
             'coupon_invalid' => array(
-                'name' => __('Invalid Coupon', 'floating-notices-for-woocommerce'),
+                'name' => __('Invalid Coupon', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'coupon',
                 'default_enabled' => true,
             ),
             'stock_warning' => array(
-                'name' => __('Low Stock Warning', 'floating-notices-for-woocommerce'),
+                'name' => __('Low Stock Warning', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'warning',
                 'category' => 'product',
                 'default_enabled' => true,
             ),
             'out_of_stock' => array(
-                'name' => __('Out of Stock', 'floating-notices-for-woocommerce'),
+                'name' => __('Out of Stock', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'product',
                 'default_enabled' => true,
             ),
             'product_options_required' => array(
-                'name' => __('Product Options Required', 'floating-notices-for-woocommerce'),
+                'name' => __('Product Options Required', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'product',
                 'default_enabled' => true,
             ),
             'wishlist_added' => array(
-                'name' => __('Added to Wishlist', 'floating-notices-for-woocommerce'),
+                'name' => __('Added to Wishlist', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'wishlist',
                 'default_enabled' => true,
             ),
             'account_updated' => array(
-                'name' => __('Account Updated', 'floating-notices-for-woocommerce'),
+                'name' => __('Account Updated', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'success',
                 'category' => 'account',
                 'default_enabled' => true,
             ),
             'account_error' => array(
-                'name' => __('Account Error', 'floating-notices-for-woocommerce'),
+                'name' => __('Account Error', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'account',
                 'default_enabled' => true,
             ),
             'shipping_calculated' => array(
-                'name' => __('Shipping Calculated', 'floating-notices-for-woocommerce'),
+                'name' => __('Shipping Calculated', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'info',
                 'category' => 'shipping',
                 'default_enabled' => true,
             ),
             'general_info' => array(
-                'name' => __('General Information', 'floating-notices-for-woocommerce'),
+                'name' => __('General Information', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'info',
                 'category' => 'general',
                 'default_enabled' => true,
             ),
             'general_error' => array(
-                'name' => __('General Error', 'floating-notices-for-woocommerce'),
+                'name' => __('General Error', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'error',
                 'category' => 'general',
                 'default_enabled' => true,
             ),
             'general_warning' => array(
-                'name' => __('General Warning', 'floating-notices-for-woocommerce'),
+                'name' => __('General Warning', 'all-in-floating-notices-for-woocommerce'),
                 'type' => 'warning',
                 'category' => 'general',
                 'default_enabled' => true,
@@ -334,7 +335,7 @@ class WooCommerce_Floating_Notices {
             );
         }
 
-        $saved_config = get_option('wfn_notification_config', array());
+        $saved_config = get_option('ainfn_notification_config', array());
         $config = $default_config;
 
         // Merge each notification entry individually so saved partial entries
@@ -363,7 +364,7 @@ class WooCommerce_Floating_Notices {
      */
     public function get_custom_notifications() {
         if ( ! isset( $this->cache['custom_notifications'] ) ) {
-            $this->cache['custom_notifications'] = get_option('wfn_custom_notifications', array());
+            $this->cache['custom_notifications'] = get_option('ainfn_custom_notifications', array());
         }
         return $this->cache['custom_notifications'];
     }
@@ -373,7 +374,7 @@ class WooCommerce_Floating_Notices {
      */
     public function get_detected_notifications() {
         if ( ! isset( $this->cache['detected_notifications'] ) ) {
-            $detected = get_option('wfn_detected_notifications', array());
+            $detected = get_option('ainfn_detected_notifications', array());
             if ( ! is_array( $detected ) ) {
                 $detected = array();
             }
@@ -631,7 +632,7 @@ class WooCommerce_Floating_Notices {
             );
         }
 
-        return apply_filters('wfn_scanned_plugin_notifications', $plugin_notifications);
+        return apply_filters('ainfn_scanned_plugin_notifications', $plugin_notifications);
     }
 
     /**
@@ -671,7 +672,7 @@ class WooCommerce_Floating_Notices {
         }
 
         if ($imported_count > 0) {
-            update_option('wfn_detected_notifications', $detected);
+            update_option('ainfn_detected_notifications', $detected);
             unset( $this->cache['detected_notifications'] );
         }
 
@@ -720,7 +721,7 @@ class WooCommerce_Floating_Notices {
             $detected[$hash]['last_seen'] = current_time('mysql');
         }
 
-        update_option('wfn_detected_notifications', $detected);
+        update_option('ainfn_detected_notifications', $detected);
         unset( $this->cache['detected_notifications'] );
         return $hash;
     }
@@ -753,7 +754,7 @@ class WooCommerce_Floating_Notices {
 
         if (isset($detected[$hash])) {
             $detected[$hash] = array_merge($detected[$hash], $data);
-            update_option('wfn_detected_notifications', $detected);
+            update_option('ainfn_detected_notifications', $detected);
             unset( $this->cache['detected_notifications'] );
             return true;
         }
@@ -769,7 +770,7 @@ class WooCommerce_Floating_Notices {
 
         if (isset($detected[$hash])) {
             unset($detected[$hash]);
-            update_option('wfn_detected_notifications', $detected);
+            update_option('ainfn_detected_notifications', $detected);
             unset( $this->cache['detected_notifications'] );
             return true;
         }
@@ -781,7 +782,7 @@ class WooCommerce_Floating_Notices {
      * Save notification configuration
      */
     public function save_notification_config($config) {
-        $result = update_option('wfn_notification_config', $config);
+        $result = update_option('ainfn_notification_config', $config);
         unset( $this->cache['notification_config'] );
         return $result;
     }
@@ -793,7 +794,7 @@ class WooCommerce_Floating_Notices {
         $custom_notifications = $this->get_custom_notifications();
         $id = 'custom_' . uniqid();
         $custom_notifications[$id] = $notification;
-        update_option('wfn_custom_notifications', $custom_notifications);
+        update_option('ainfn_custom_notifications', $custom_notifications);
         unset( $this->cache['custom_notifications'] );
         return $id;
     }
@@ -807,7 +808,7 @@ class WooCommerce_Floating_Notices {
             return false;
         }
         $custom_notifications[$id] = array_merge($custom_notifications[$id], $notification);
-        update_option('wfn_custom_notifications', $custom_notifications);
+        update_option('ainfn_custom_notifications', $custom_notifications);
         unset( $this->cache['custom_notifications'] );
         return true;
     }
@@ -819,7 +820,7 @@ class WooCommerce_Floating_Notices {
         $custom_notifications = $this->get_custom_notifications();
         if (isset($custom_notifications[$id])) {
             unset($custom_notifications[$id]);
-            update_option('wfn_custom_notifications', $custom_notifications);
+            update_option('ainfn_custom_notifications', $custom_notifications);
             unset( $this->cache['custom_notifications'] );
             return true;
         }
@@ -833,10 +834,10 @@ class WooCommerce_Floating_Notices {
         if (!is_admin() && $this->settings['enabled'] === 'yes') {
             // Enqueue CSS
             wp_enqueue_style(
-                'wfn-styles',
-                WFN_PLUGIN_URL . 'assets/css/floating-notices.css',
+                'ainfn-styles',
+                AINFN_PLUGIN_URL . 'assets/css/floating-notices.css',
                 array(),
-                WFN_VERSION
+                AINFN_VERSION
             );
             
             // Add dynamic CSS based on settings
@@ -844,30 +845,30 @@ class WooCommerce_Floating_Notices {
             // so changing settings never leaves orphan transient rows behind.
             // The plugin version and the CSS revision are part of the key, so an
             // update that changes the generated CSS does not serve a stale copy.
-            $settings_hash = md5(WFN_VERSION . '|css-rev-2|' . wp_json_encode($this->settings));
-            $cached = get_transient('wfn_dynamic_css');
+            $settings_hash = md5(AINFN_VERSION . '|css-rev-2|' . wp_json_encode($this->settings));
+            $cached = get_transient('ainfn_dynamic_css');
             if (!is_array($cached) || !isset($cached['hash'], $cached['css']) || $cached['hash'] !== $settings_hash) {
                 $cached = array(
                     'hash' => $settings_hash,
                     'css'  => $this->generate_dynamic_css(),
                 );
-                set_transient('wfn_dynamic_css', $cached, DAY_IN_SECONDS);
+                set_transient('ainfn_dynamic_css', $cached, DAY_IN_SECONDS);
             }
-            wp_add_inline_style('wfn-styles', $cached['css']);
+            wp_add_inline_style('ainfn-styles', $cached['css']);
             
             // Enqueue JavaScript
             wp_enqueue_script(
-                'wfn-script',
-                WFN_PLUGIN_URL . 'assets/js/floating-notices.js',
+                'ainfn-script',
+                AINFN_PLUGIN_URL . 'assets/js/floating-notices.js',
                 array('jquery'),
-                WFN_VERSION,
+                AINFN_VERSION,
                 true
             );
             
             // Localize script with settings
-            wp_localize_script('wfn-script', 'wfn_params', array(
+            wp_localize_script('ainfn-script', 'ainfn_params', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wfn_frontend_nonce'),
+                'nonce' => wp_create_nonce('ainfn_frontend_nonce'),
                 'can_detect' => $this->can_detect_notifications(),
                 'position' => $this->settings['position'],
                 'auto_dismiss' => intval($this->settings['auto_dismiss']),
@@ -879,11 +880,6 @@ class WooCommerce_Floating_Notices {
                 'detected_notifications' => $this->get_detected_notifications_for_frontend(),
                 'enable_auto_detection' => true,
             ));
-            
-            // Add custom CSS if any
-            if (!empty($this->settings['custom_css'])) {
-                wp_add_inline_style('wfn-styles', $this->settings['custom_css']);
-            }
         }
     }
     
@@ -1000,7 +996,7 @@ class WooCommerce_Floating_Notices {
      * Enqueue admin assets
      */
     public function enqueue_admin_assets($hook) {
-        if ('woocommerce_page_wfn-settings' !== $hook) {
+        if ('woocommerce_page_ainfn-settings' !== $hook) {
             return;
         }
         
@@ -1010,34 +1006,34 @@ class WooCommerce_Floating_Notices {
         
         // Admin styles
         wp_enqueue_style(
-            'wfn-admin-styles',
-            WFN_PLUGIN_URL . 'assets/css/admin-styles.css',
+            'ainfn-admin-styles',
+            AINFN_PLUGIN_URL . 'assets/css/admin-styles.css',
             array('wp-color-picker'),
-            WFN_VERSION
+            AINFN_VERSION
         );
 
         // Frontend notice styles (plus dynamic colors) so the Preview tab
         // renders notices exactly as they appear on the storefront.
         wp_enqueue_style(
-            'wfn-styles',
-            WFN_PLUGIN_URL . 'assets/css/floating-notices.css',
+            'ainfn-styles',
+            AINFN_PLUGIN_URL . 'assets/css/floating-notices.css',
             array(),
-            WFN_VERSION
+            AINFN_VERSION
         );
-        wp_add_inline_style('wfn-styles', $this->generate_dynamic_css());
+        wp_add_inline_style('ainfn-styles', $this->generate_dynamic_css());
 
         // Admin script
         wp_enqueue_script(
-            'wfn-admin-script',
-            WFN_PLUGIN_URL . 'assets/js/admin-script.js',
+            'ainfn-admin-script',
+            AINFN_PLUGIN_URL . 'assets/js/admin-script.js',
             array('jquery', 'wp-color-picker'),
-            WFN_VERSION,
+            AINFN_VERSION,
             true
         );
 
-        wp_localize_script('wfn-admin-script', 'wfn_admin', array(
+        wp_localize_script('ainfn-admin-script', 'ainfn_admin', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wfn_admin_nonce'),
+            'nonce' => wp_create_nonce('ainfn_admin_nonce'),
             'custom_notifications' => $this->get_custom_notifications(),
         ));
     }
@@ -1048,10 +1044,10 @@ class WooCommerce_Floating_Notices {
     public function add_admin_menu() {
         add_submenu_page(
             'woocommerce',
-            __('Floating Notices', 'floating-notices-for-woocommerce'),
-            __('Floating Notices', 'floating-notices-for-woocommerce'),
+            __('Floating Notices', 'all-in-floating-notices-for-woocommerce'),
+            __('Floating Notices', 'all-in-floating-notices-for-woocommerce'),
             'manage_woocommerce',
-            'wfn-settings',
+            'ainfn-settings',
             array($this, 'settings_page')
         );
     }
@@ -1060,7 +1056,7 @@ class WooCommerce_Floating_Notices {
      * Register settings
      */
     public function register_settings() {
-        register_setting('wfn_settings_group', 'wfn_settings', array(
+        register_setting('ainfn_settings_group', 'ainfn_settings', array(
             'sanitize_callback' => array( $this, 'sanitize_settings' ),
         ));
     }
@@ -1091,7 +1087,6 @@ class WooCommerce_Floating_Notices {
             'border_radius'      => 'int',
             'padding'            => 'int',
             'shadow_style'       => 'select:none,small,medium,large,xl',
-            'custom_css'         => 'css',
         );
 
         // Color fields for each notice type
@@ -1136,8 +1131,6 @@ class WooCommerce_Floating_Notices {
                 } else {
                     $sanitized[ $key ] = $this->settings[ $key ];
                 }
-            } elseif ( $type === 'css' ) {
-                $sanitized[ $key ] = wp_strip_all_tags( $value );
             } else {
                 $sanitized[ $key ] = sanitize_text_field( $value );
             }
@@ -1150,109 +1143,108 @@ class WooCommerce_Floating_Notices {
      * Settings page
      */
     public function settings_page() {
-        if (isset($_POST['wfn_settings'], $_POST['wfn_nonce']) && wp_verify_nonce(sanitize_key($_POST['wfn_nonce']), 'wfn_settings_nonce')) {
-            update_option('wfn_settings', $this->sanitize_settings(wp_unslash($_POST['wfn_settings']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by the dedicated sanitize_* method.
+        if (isset($_POST['ainfn_settings'], $_POST['ainfn_nonce']) && wp_verify_nonce(sanitize_key($_POST['ainfn_nonce']), 'ainfn_settings_nonce')) {
+            update_option('ainfn_settings', $this->sanitize_settings(wp_unslash($_POST['ainfn_settings']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by the dedicated sanitize_* method.
             $this->load_settings();
-            echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved!', 'floating-notices-for-woocommerce') . '</p></div>';
+            echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved!', 'all-in-floating-notices-for-woocommerce') . '</p></div>';
         }
         ?>
-        <div class="wrap wfn-admin-wrap">
+        <div class="wrap ainfn-admin-wrap">
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
             
-            <div class="wfn-settings-container">
-                <div class="wfn-tabs">
-                    <ul class="wfn-tab-nav">
-                        <li><a href="#general-settings" class="active"><?php esc_html_e('General', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#notifications-settings"><?php esc_html_e('Notifications', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#design-settings"><?php esc_html_e('Design', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#colors-settings"><?php esc_html_e('Colors', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#typography-settings"><?php esc_html_e('Typography', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#custom-css"><?php esc_html_e('Custom CSS', 'floating-notices-for-woocommerce'); ?></a></li>
-                        <li><a href="#preview"><?php esc_html_e('Preview', 'floating-notices-for-woocommerce'); ?></a></li>
+            <div class="ainfn-settings-container">
+                <div class="ainfn-tabs">
+                    <ul class="ainfn-tab-nav">
+                        <li><a href="#general-settings" class="active"><?php esc_html_e('General', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
+                        <li><a href="#notifications-settings"><?php esc_html_e('Notifications', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
+                        <li><a href="#design-settings"><?php esc_html_e('Design', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
+                        <li><a href="#colors-settings"><?php esc_html_e('Colors', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
+                        <li><a href="#typography-settings"><?php esc_html_e('Typography', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
+                        <li><a href="#preview"><?php esc_html_e('Preview', 'all-in-floating-notices-for-woocommerce'); ?></a></li>
                     </ul>
                     
-                    <form method="post" action="" id="wfn-settings-form">
-                        <?php wp_nonce_field('wfn_settings_nonce', 'wfn_nonce'); ?>
+                    <form method="post" action="" id="ainfn-settings-form">
+                        <?php wp_nonce_field('ainfn_settings_nonce', 'ainfn_nonce'); ?>
                         
                         <!-- General Settings Tab -->
-                        <div id="general-settings" class="wfn-tab-content active">
-                            <h2><?php esc_html_e('General Settings', 'floating-notices-for-woocommerce'); ?></h2>
+                        <div id="general-settings" class="ainfn-tab-content active">
+                            <h2><?php esc_html_e('General Settings', 'all-in-floating-notices-for-woocommerce'); ?></h2>
                             
                             <table class="form-table">
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_enabled"><?php esc_html_e('Enable Floating Notices', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_enabled"><?php esc_html_e('Enable Floating Notices', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[enabled]" id="wfn_enabled">
-                                            <option value="yes" <?php selected($this->settings['enabled'], 'yes'); ?>><?php esc_html_e('Yes', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="no" <?php selected($this->settings['enabled'], 'no'); ?>><?php esc_html_e('No', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[enabled]" id="ainfn_enabled">
+                                            <option value="yes" <?php selected($this->settings['enabled'], 'yes'); ?>><?php esc_html_e('Yes', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="no" <?php selected($this->settings['enabled'], 'no'); ?>><?php esc_html_e('No', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_position"><?php esc_html_e('Notice Position', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_position"><?php esc_html_e('Notice Position', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[position]" id="wfn_position">
-                                            <option value="top-right" <?php selected($this->settings['position'], 'top-right'); ?>><?php esc_html_e('Top Right', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="top-left" <?php selected($this->settings['position'], 'top-left'); ?>><?php esc_html_e('Top Left', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="bottom-right" <?php selected($this->settings['position'], 'bottom-right'); ?>><?php esc_html_e('Bottom Right', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="bottom-left" <?php selected($this->settings['position'], 'bottom-left'); ?>><?php esc_html_e('Bottom Left', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="top-center" <?php selected($this->settings['position'], 'top-center'); ?>><?php esc_html_e('Top Center', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[position]" id="ainfn_position">
+                                            <option value="top-right" <?php selected($this->settings['position'], 'top-right'); ?>><?php esc_html_e('Top Right', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="top-left" <?php selected($this->settings['position'], 'top-left'); ?>><?php esc_html_e('Top Left', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="bottom-right" <?php selected($this->settings['position'], 'bottom-right'); ?>><?php esc_html_e('Bottom Right', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="bottom-left" <?php selected($this->settings['position'], 'bottom-left'); ?>><?php esc_html_e('Bottom Left', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="top-center" <?php selected($this->settings['position'], 'top-center'); ?>><?php esc_html_e('Top Center', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_auto_dismiss"><?php esc_html_e('Auto Dismiss Time (ms)', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_auto_dismiss"><?php esc_html_e('Auto Dismiss Time (ms)', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <input type="number" name="wfn_settings[auto_dismiss]" id="wfn_auto_dismiss" 
+                                        <input type="number" name="ainfn_settings[auto_dismiss]" id="ainfn_auto_dismiss" 
                                                value="<?php echo esc_attr($this->settings['auto_dismiss']); ?>" 
                                                min="0" step="1000" />
-                                        <p class="description"><?php esc_html_e('Time in milliseconds. Set to 0 to disable auto-dismiss.', 'floating-notices-for-woocommerce'); ?></p>
+                                        <p class="description"><?php esc_html_e('Time in milliseconds. Set to 0 to disable auto-dismiss.', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_progress_bar"><?php esc_html_e('Show Progress Bar', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_progress_bar"><?php esc_html_e('Show Progress Bar', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[show_progress_bar]" id="wfn_progress_bar">
-                                            <option value="yes" <?php selected($this->settings['show_progress_bar'], 'yes'); ?>><?php esc_html_e('Yes', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="no" <?php selected($this->settings['show_progress_bar'], 'no'); ?>><?php esc_html_e('No', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[show_progress_bar]" id="ainfn_progress_bar">
+                                            <option value="yes" <?php selected($this->settings['show_progress_bar'], 'yes'); ?>><?php esc_html_e('Yes', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="no" <?php selected($this->settings['show_progress_bar'], 'no'); ?>><?php esc_html_e('No', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_animation"><?php esc_html_e('Animation Style', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_animation"><?php esc_html_e('Animation Style', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[animation_style]" id="wfn_animation">
-                                            <option value="slide" <?php selected($this->settings['animation_style'], 'slide'); ?>><?php esc_html_e('Slide', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="fade" <?php selected($this->settings['animation_style'], 'fade'); ?>><?php esc_html_e('Fade', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="bounce" <?php selected($this->settings['animation_style'], 'bounce'); ?>><?php esc_html_e('Bounce', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="zoom" <?php selected($this->settings['animation_style'], 'zoom'); ?>><?php esc_html_e('Zoom', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[animation_style]" id="ainfn_animation">
+                                            <option value="slide" <?php selected($this->settings['animation_style'], 'slide'); ?>><?php esc_html_e('Slide', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="fade" <?php selected($this->settings['animation_style'], 'fade'); ?>><?php esc_html_e('Fade', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="bounce" <?php selected($this->settings['animation_style'], 'bounce'); ?>><?php esc_html_e('Bounce', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="zoom" <?php selected($this->settings['animation_style'], 'zoom'); ?>><?php esc_html_e('Zoom', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_mobile_position"><?php esc_html_e('Mobile Position', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_mobile_position"><?php esc_html_e('Mobile Position', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[mobile_position]" id="wfn_mobile_position">
-                                            <option value="top-full" <?php selected($this->settings['mobile_position'], 'top-full'); ?>><?php esc_html_e('Top Full Width', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="bottom-full" <?php selected($this->settings['mobile_position'], 'bottom-full'); ?>><?php esc_html_e('Bottom Full Width', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="same" <?php selected($this->settings['mobile_position'], 'same'); ?>><?php esc_html_e('Same as Desktop', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[mobile_position]" id="ainfn_mobile_position">
+                                            <option value="top-full" <?php selected($this->settings['mobile_position'], 'top-full'); ?>><?php esc_html_e('Top Full Width', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="bottom-full" <?php selected($this->settings['mobile_position'], 'bottom-full'); ?>><?php esc_html_e('Bottom Full Width', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="same" <?php selected($this->settings['mobile_position'], 'same'); ?>><?php esc_html_e('Same as Desktop', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
@@ -1260,9 +1252,9 @@ class WooCommerce_Floating_Notices {
                         </div>
 
                         <!-- Notifications Settings Tab -->
-                        <div id="notifications-settings" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Notification Management', 'floating-notices-for-woocommerce'); ?></h2>
-                            <p><?php esc_html_e('Control individual notifications, customize their behavior, and add custom notifications.', 'floating-notices-for-woocommerce'); ?></p>
+                        <div id="notifications-settings" class="ainfn-tab-content">
+                            <h2><?php esc_html_e('Notification Management', 'all-in-floating-notices-for-woocommerce'); ?></h2>
+                            <p><?php esc_html_e('Control individual notifications, customize their behavior, and add custom notifications.', 'all-in-floating-notices-for-woocommerce'); ?></p>
 
                             <?php
                             $notification_types = $this->get_notification_types();
@@ -1271,21 +1263,21 @@ class WooCommerce_Floating_Notices {
 
                             // Group notifications by category
                             $categories = array(
-                                'cart' => __('Cart Notifications', 'floating-notices-for-woocommerce'),
-                                'checkout' => __('Checkout Notifications', 'floating-notices-for-woocommerce'),
-                                'coupon' => __('Coupon Notifications', 'floating-notices-for-woocommerce'),
-                                'product' => __('Product Notifications', 'floating-notices-for-woocommerce'),
-                                'account' => __('Account Notifications', 'floating-notices-for-woocommerce'),
-                                'shipping' => __('Shipping Notifications', 'floating-notices-for-woocommerce'),
-                                'wishlist' => __('Wishlist Notifications', 'floating-notices-for-woocommerce'),
-                                'general' => __('General Notifications', 'floating-notices-for-woocommerce'),
+                                'cart' => __('Cart Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'checkout' => __('Checkout Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'coupon' => __('Coupon Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'product' => __('Product Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'account' => __('Account Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'shipping' => __('Shipping Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'wishlist' => __('Wishlist Notifications', 'all-in-floating-notices-for-woocommerce'),
+                                'general' => __('General Notifications', 'all-in-floating-notices-for-woocommerce'),
                             );
                             ?>
 
-                            <div class="wfn-notifications-manager">
+                            <div class="ainfn-notifications-manager">
                                 <!-- Built-in Notifications -->
-                                <div class="wfn-notifications-section">
-                                    <h3><?php esc_html_e('Built-in Notifications', 'floating-notices-for-woocommerce'); ?></h3>
+                                <div class="ainfn-notifications-section">
+                                    <h3><?php esc_html_e('Built-in Notifications', 'all-in-floating-notices-for-woocommerce'); ?></h3>
 
                                     <?php foreach ($categories as $category_key => $category_name) :
                                         $category_notifications = array_filter($notification_types, function($n) use ($category_key) {
@@ -1294,18 +1286,18 @@ class WooCommerce_Floating_Notices {
 
                                         if (empty($category_notifications)) continue;
                                     ?>
-                                        <div class="wfn-notification-category">
+                                        <div class="ainfn-notification-category">
                                             <h4><?php echo esc_html($category_name); ?></h4>
 
-                                            <table class="wfn-notifications-table">
+                                            <table class="ainfn-notifications-table">
                                                 <thead>
                                                     <tr>
-                                                        <th style="width: 30px;"><?php esc_html_e('Enabled', 'floating-notices-for-woocommerce'); ?></th>
-                                                        <th><?php esc_html_e('Notification', 'floating-notices-for-woocommerce'); ?></th>
-                                                        <th><?php esc_html_e('Type', 'floating-notices-for-woocommerce'); ?></th>
-                                                        <th><?php esc_html_e('Timing', 'floating-notices-for-woocommerce'); ?></th>
-                                                        <th><?php esc_html_e('Position', 'floating-notices-for-woocommerce'); ?></th>
-                                                        <th><?php esc_html_e('Actions', 'floating-notices-for-woocommerce'); ?></th>
+                                                        <th style="width: 30px;"><?php esc_html_e('Enabled', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                        <th><?php esc_html_e('Notification', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                        <th><?php esc_html_e('Type', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                        <th><?php esc_html_e('Timing', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                        <th><?php esc_html_e('Position', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                        <th><?php esc_html_e('Actions', 'all-in-floating-notices-for-woocommerce'); ?></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1317,35 +1309,35 @@ class WooCommerce_Floating_Notices {
                                                     ?>
                                                         <tr data-notification-key="<?php echo esc_attr($key); ?>">
                                                             <td>
-                                                                <label class="wfn-toggle">
+                                                                <label class="ainfn-toggle">
                                                                     <input type="checkbox"
-                                                                           name="wfn_notification[<?php echo esc_attr($key); ?>][enabled]"
+                                                                           name="ainfn_notification[<?php echo esc_attr($key); ?>][enabled]"
                                                                            <?php checked($enabled, true); ?>
-                                                                           class="wfn-notification-enabled" />
-                                                                    <span class="wfn-toggle-slider"></span>
+                                                                           class="ainfn-notification-enabled" />
+                                                                    <span class="ainfn-toggle-slider"></span>
                                                                 </label>
                                                             </td>
                                                             <td><strong><?php echo esc_html($notification['name']); ?></strong></td>
                                                             <td>
-                                                                <span class="wfn-badge wfn-badge-<?php echo esc_attr($notification['type']); ?>">
+                                                                <span class="ainfn-badge ainfn-badge-<?php echo esc_attr($notification['type']); ?>">
                                                                     <?php echo esc_html(ucfirst($notification['type'])); ?>
                                                                 </span>
                                                             </td>
                                                             <td>
-                                                                <select name="wfn_notification[<?php echo esc_attr($key); ?>][timing]" class="wfn-notification-timing">
-                                                                    <option value="default" <?php selected($timing, 'default'); ?>><?php esc_html_e('Default', 'floating-notices-for-woocommerce'); ?></option>
-                                                                    <option value="custom" <?php selected($timing, 'custom'); ?>><?php esc_html_e('Custom', 'floating-notices-for-woocommerce'); ?></option>
+                                                                <select name="ainfn_notification[<?php echo esc_attr($key); ?>][timing]" class="ainfn-notification-timing">
+                                                                    <option value="default" <?php selected($timing, 'default'); ?>><?php esc_html_e('Default', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                                                    <option value="custom" <?php selected($timing, 'custom'); ?>><?php esc_html_e('Custom', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <select name="wfn_notification[<?php echo esc_attr($key); ?>][position]" class="wfn-notification-position">
-                                                                    <option value="default" <?php selected($position, 'default'); ?>><?php esc_html_e('Default', 'floating-notices-for-woocommerce'); ?></option>
-                                                                    <option value="custom" <?php selected($position, 'custom'); ?>><?php esc_html_e('Custom', 'floating-notices-for-woocommerce'); ?></option>
+                                                                <select name="ainfn_notification[<?php echo esc_attr($key); ?>][position]" class="ainfn-notification-position">
+                                                                    <option value="default" <?php selected($position, 'default'); ?>><?php esc_html_e('Default', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                                                    <option value="custom" <?php selected($position, 'custom'); ?>><?php esc_html_e('Custom', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <button type="button" class="button button-small wfn-edit-notification" data-key="<?php echo esc_attr($key); ?>">
-                                                                    <?php esc_html_e('Configure', 'floating-notices-for-woocommerce'); ?>
+                                                                <button type="button" class="button button-small ainfn-edit-notification" data-key="<?php echo esc_attr($key); ?>">
+                                                                    <?php esc_html_e('Configure', 'all-in-floating-notices-for-woocommerce'); ?>
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -1357,15 +1349,15 @@ class WooCommerce_Floating_Notices {
                                 </div>
 
                                 <!-- Detected Notifications (3rd Party Plugins) -->
-                                <div class="wfn-notifications-section">
+                                <div class="ainfn-notifications-section">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                                         <div>
-                                            <h3 style="margin: 0 0 5px 0;"><?php esc_html_e('Auto-Detected Notifications', 'floating-notices-for-woocommerce'); ?></h3>
-                                            <p style="margin: 0;"><?php esc_html_e('Notifications automatically detected from 3rd party plugins (SUMO Reward Points, Gift Cards, Waitlist, etc.). These are captured as they appear on your site.', 'floating-notices-for-woocommerce'); ?></p>
+                                            <h3 style="margin: 0 0 5px 0;"><?php esc_html_e('Auto-Detected Notifications', 'all-in-floating-notices-for-woocommerce'); ?></h3>
+                                            <p style="margin: 0;"><?php esc_html_e('Notifications automatically detected from 3rd party plugins (SUMO Reward Points, Gift Cards, Waitlist, etc.). These are captured as they appear on your site.', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                         </div>
-                                        <button type="button" class="button button-secondary wfn-scan-plugins" style="flex-shrink: 0;">
+                                        <button type="button" class="button button-secondary ainfn-scan-plugins" style="flex-shrink: 0;">
                                             <span class="dashicons dashicons-update" style="vertical-align: middle;"></span>
-                                            <?php esc_html_e('Scan for Plugins', 'floating-notices-for-woocommerce'); ?>
+                                            <?php esc_html_e('Scan for Plugins', 'all-in-floating-notices-for-woocommerce'); ?>
                                         </button>
                                     </div>
 
@@ -1373,48 +1365,48 @@ class WooCommerce_Floating_Notices {
                                     $detected_notifications = $this->get_detected_notifications();
                                     if (!empty($detected_notifications)) :
                                     ?>
-                                        <table class="wfn-notifications-table">
+                                        <table class="ainfn-notifications-table">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 30px;"><?php esc_html_e('Enabled', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Notification Preview', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Type', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Source', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Times Seen', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Actions', 'floating-notices-for-woocommerce'); ?></th>
+                                                    <th style="width: 30px;"><?php esc_html_e('Enabled', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Notification Preview', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Type', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Source', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Times Seen', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Actions', 'all-in-floating-notices-for-woocommerce'); ?></th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="wfn-detected-notifications-list">
+                                            <tbody id="ainfn-detected-notifications-list">
                                                 <?php foreach ($detected_notifications as $hash => $notification) : ?>
                                                     <tr data-notification-hash="<?php echo esc_attr($hash); ?>">
                                                         <td>
-                                                            <label class="wfn-toggle">
+                                                            <label class="ainfn-toggle">
                                                                 <input type="checkbox"
-                                                                       class="wfn-detected-notification-enabled"
+                                                                       class="ainfn-detected-notification-enabled"
                                                                        data-hash="<?php echo esc_attr($hash); ?>"
                                                                        <?php checked($notification['enabled'], true); ?> />
-                                                                <span class="wfn-toggle-slider"></span>
+                                                                <span class="ainfn-toggle-slider"></span>
                                                             </label>
                                                         </td>
                                                         <td>
                                                             <strong><?php echo isset($notification['custom_name']) ? esc_html($notification['custom_name']) : esc_html($notification['auto_name']); ?></strong>
-                                                            <div class="wfn-notification-preview"><?php echo wp_kses_post(wp_trim_words($notification['message'], 15)); ?></div>
+                                                            <div class="ainfn-notification-preview"><?php echo wp_kses_post(wp_trim_words($notification['message'], 15)); ?></div>
                                                         </td>
                                                         <td>
-                                                            <span class="wfn-badge wfn-badge-<?php echo esc_attr($notification['type']); ?>">
+                                                            <span class="ainfn-badge ainfn-badge-<?php echo esc_attr($notification['type']); ?>">
                                                                 <?php echo esc_html(ucfirst($notification['type'])); ?>
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span class="wfn-source-badge"><?php echo esc_html($notification['source']); ?></span>
+                                                            <span class="ainfn-source-badge"><?php echo esc_html($notification['source']); ?></span>
                                                         </td>
                                                         <td><?php echo esc_html($notification['count']); ?>x</td>
                                                         <td>
-                                                            <button type="button" class="button button-small wfn-edit-detected-notification" data-hash="<?php echo esc_attr($hash); ?>">
-                                                                <?php esc_html_e('Configure', 'floating-notices-for-woocommerce'); ?>
+                                                            <button type="button" class="button button-small ainfn-edit-detected-notification" data-hash="<?php echo esc_attr($hash); ?>">
+                                                                <?php esc_html_e('Configure', 'all-in-floating-notices-for-woocommerce'); ?>
                                                             </button>
-                                                            <button type="button" class="button button-small wfn-delete-detected-notification" data-hash="<?php echo esc_attr($hash); ?>">
-                                                                <?php esc_html_e('Delete', 'floating-notices-for-woocommerce'); ?>
+                                                            <button type="button" class="button button-small ainfn-delete-detected-notification" data-hash="<?php echo esc_attr($hash); ?>">
+                                                                <?php esc_html_e('Delete', 'all-in-floating-notices-for-woocommerce'); ?>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -1422,67 +1414,67 @@ class WooCommerce_Floating_Notices {
                                             </tbody>
                                         </table>
                                     <?php else : ?>
-                                        <div class="wfn-empty-state">
-                                            <p><?php esc_html_e('No notifications detected yet. Notifications from 3rd party plugins will appear here automatically when they are displayed on your site.', 'floating-notices-for-woocommerce'); ?></p>
+                                        <div class="ainfn-empty-state">
+                                            <p><?php esc_html_e('No notifications detected yet. Notifications from 3rd party plugins will appear here automatically when they are displayed on your site.', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                         </div>
                                     <?php endif; ?>
                                 </div>
 
                                 <!-- Custom Notifications -->
-                                <div class="wfn-notifications-section">
-                                    <h3><?php esc_html_e('Custom Notifications', 'floating-notices-for-woocommerce'); ?></h3>
-                                    <p><?php esc_html_e('Create custom notifications to display anywhere on your site.', 'floating-notices-for-woocommerce'); ?></p>
+                                <div class="ainfn-notifications-section">
+                                    <h3><?php esc_html_e('Custom Notifications', 'all-in-floating-notices-for-woocommerce'); ?></h3>
+                                    <p><?php esc_html_e('Create custom notifications to display anywhere on your site.', 'all-in-floating-notices-for-woocommerce'); ?></p>
 
-                                    <button type="button" class="button button-primary wfn-add-custom-notification">
-                                        <?php esc_html_e('+ Add Custom Notification', 'floating-notices-for-woocommerce'); ?>
+                                    <button type="button" class="button button-primary ainfn-add-custom-notification">
+                                        <?php esc_html_e('+ Add Custom Notification', 'all-in-floating-notices-for-woocommerce'); ?>
                                     </button>
 
                                     <!-- Usage Instructions -->
-                                    <div class="wfn-help-box" style="margin: 20px 0; padding: 15px; background: #f0f6fc; border-left: 4px solid #0366d6; border-radius: 4px;">
-                                        <h4 style="margin-top: 0;"><?php esc_html_e('How to Display Custom Notifications', 'floating-notices-for-woocommerce'); ?></h4>
-                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Using Shortcode:', 'floating-notices-for-woocommerce'); ?></strong></p>
-                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px; margin-bottom: 10px;">[wfn_show id="<?php echo !empty($custom_notifications) ? esc_attr(array_key_first($custom_notifications)) : 'custom_xxx'; ?>"]</code>
-                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Or by name:', 'floating-notices-for-woocommerce'); ?></strong></p>
-                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px; margin-bottom: 10px;">[wfn_show name="<?php echo !empty($custom_notifications) ? esc_attr(reset($custom_notifications)['name']) : 'Your Notification Name'; ?>"]</code>
-                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Using JavaScript:', 'floating-notices-for-woocommerce'); ?></strong></p>
-                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px;">WooFloatingNotices.displayCustomNotification('<?php echo !empty($custom_notifications) ? esc_js(array_key_first($custom_notifications)) : 'custom_xxx'; ?>');</code>
-                                        <p style="margin-top: 10px; font-size: 12px; color: #666;"><?php esc_html_e('Note: Copy the ID from the table below to use in your shortcode or JavaScript.', 'floating-notices-for-woocommerce'); ?></p>
+                                    <div class="ainfn-help-box" style="margin: 20px 0; padding: 15px; background: #f0f6fc; border-left: 4px solid #0366d6; border-radius: 4px;">
+                                        <h4 style="margin-top: 0;"><?php esc_html_e('How to Display Custom Notifications', 'all-in-floating-notices-for-woocommerce'); ?></h4>
+                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Using Shortcode:', 'all-in-floating-notices-for-woocommerce'); ?></strong></p>
+                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px; margin-bottom: 10px;">[ainfn_show id="<?php echo !empty($custom_notifications) ? esc_attr(key(array_slice($custom_notifications, 0, 1, true))) : 'custom_xxx'; ?>"]</code>
+                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Or by name:', 'all-in-floating-notices-for-woocommerce'); ?></strong></p>
+                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px; margin-bottom: 10px;">[ainfn_show name="<?php echo !empty($custom_notifications) ? esc_attr(reset($custom_notifications)['name']) : 'Your Notification Name'; ?>"]</code>
+                                        <p style="margin-bottom: 10px;"><strong><?php esc_html_e('Using JavaScript:', 'all-in-floating-notices-for-woocommerce'); ?></strong></p>
+                                        <code style="background: #fff; padding: 8px; display: inline-block; border-radius: 3px;">AinfnFloatingNotices.displayCustomNotification('<?php echo !empty($custom_notifications) ? esc_html(key(array_slice($custom_notifications, 0, 1, true))) : 'custom_xxx'; ?>');</code>
+                                        <p style="margin-top: 10px; font-size: 12px; color: #666;"><?php esc_html_e('Note: Copy the ID from the table below to use in your shortcode or JavaScript.', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                     </div>
 
                                     <?php if (!empty($custom_notifications)) : ?>
-                                        <table class="wfn-notifications-table" style="margin-top: 20px;">
+                                        <table class="ainfn-notifications-table" style="margin-top: 20px;">
                                             <thead>
                                                 <tr>
-                                                    <th><?php esc_html_e('Name', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('ID', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Message', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Type', 'floating-notices-for-woocommerce'); ?></th>
-                                                    <th><?php esc_html_e('Actions', 'floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Name', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('ID', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Message', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Type', 'all-in-floating-notices-for-woocommerce'); ?></th>
+                                                    <th><?php esc_html_e('Actions', 'all-in-floating-notices-for-woocommerce'); ?></th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="wfn-custom-notifications-list">
+                                            <tbody id="ainfn-custom-notifications-list">
                                                 <?php foreach ($custom_notifications as $id => $notification) : ?>
                                                     <tr data-notification-id="<?php echo esc_attr($id); ?>">
                                                         <td><strong><?php echo esc_html($notification['name']); ?></strong></td>
                                                         <td>
                                                             <code style="font-size: 11px; background: #f5f5f5; padding: 4px 8px; border-radius: 3px; cursor: pointer;"
-                                                                  onclick="navigator.clipboard.writeText('<?php echo esc_js($id); ?>'); this.style.background='#d4edda'; setTimeout(() => this.style.background='#f5f5f5', 1000);"
+                                                                  class="ainfn-copy-id" data-ainfn-copy="<?php echo esc_attr($id); ?>"
                                                                   title="Click to copy">
                                                                 <?php echo esc_html($id); ?>
                                                             </code>
                                                         </td>
                                                         <td><?php echo esc_html(wp_trim_words($notification['message'], 10)); ?></td>
                                                         <td>
-                                                            <span class="wfn-badge wfn-badge-<?php echo esc_attr($notification['type']); ?>">
+                                                            <span class="ainfn-badge ainfn-badge-<?php echo esc_attr($notification['type']); ?>">
                                                                 <?php echo esc_html(ucfirst($notification['type'])); ?>
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <button type="button" class="button button-small wfn-edit-custom-notification" data-id="<?php echo esc_attr($id); ?>">
-                                                                <?php esc_html_e('Edit', 'floating-notices-for-woocommerce'); ?>
+                                                            <button type="button" class="button button-small ainfn-edit-custom-notification" data-id="<?php echo esc_attr($id); ?>">
+                                                                <?php esc_html_e('Edit', 'all-in-floating-notices-for-woocommerce'); ?>
                                                             </button>
-                                                            <button type="button" class="button button-small wfn-delete-custom-notification" data-id="<?php echo esc_attr($id); ?>">
-                                                                <?php esc_html_e('Delete', 'floating-notices-for-woocommerce'); ?>
+                                                            <button type="button" class="button button-small ainfn-delete-custom-notification" data-id="<?php echo esc_attr($id); ?>">
+                                                                <?php esc_html_e('Delete', 'all-in-floating-notices-for-woocommerce'); ?>
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -1493,48 +1485,48 @@ class WooCommerce_Floating_Notices {
                                 </div>
 
                                 <!-- Bulk Actions -->
-                                <div class="wfn-bulk-actions">
-                                    <h3><?php esc_html_e('Bulk Actions', 'floating-notices-for-woocommerce'); ?></h3>
-                                    <button type="button" class="button wfn-enable-all-notifications">
-                                        <?php esc_html_e('Enable All', 'floating-notices-for-woocommerce'); ?>
+                                <div class="ainfn-bulk-actions">
+                                    <h3><?php esc_html_e('Bulk Actions', 'all-in-floating-notices-for-woocommerce'); ?></h3>
+                                    <button type="button" class="button ainfn-enable-all-notifications">
+                                        <?php esc_html_e('Enable All', 'all-in-floating-notices-for-woocommerce'); ?>
                                     </button>
-                                    <button type="button" class="button wfn-disable-all-notifications">
-                                        <?php esc_html_e('Disable All', 'floating-notices-for-woocommerce'); ?>
+                                    <button type="button" class="button ainfn-disable-all-notifications">
+                                        <?php esc_html_e('Disable All', 'all-in-floating-notices-for-woocommerce'); ?>
                                     </button>
-                                    <button type="button" class="button wfn-reset-all-notifications">
-                                        <?php esc_html_e('Reset to Defaults', 'floating-notices-for-woocommerce'); ?>
+                                    <button type="button" class="button ainfn-reset-all-notifications">
+                                        <?php esc_html_e('Reset to Defaults', 'all-in-floating-notices-for-woocommerce'); ?>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Design Settings Tab -->
-                        <div id="design-settings" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Design Settings', 'floating-notices-for-woocommerce'); ?></h2>
+                        <div id="design-settings" class="ainfn-tab-content">
+                            <h2><?php esc_html_e('Design Settings', 'all-in-floating-notices-for-woocommerce'); ?></h2>
                             
                             <table class="form-table">
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_design_preset"><?php esc_html_e('Design Preset', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_design_preset"><?php esc_html_e('Design Preset', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[design_preset]" id="wfn_design_preset">
-                                            <option value="modern" <?php selected($this->settings['design_preset'], 'modern'); ?>><?php esc_html_e('Modern Gradient', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="flat" <?php selected($this->settings['design_preset'], 'flat'); ?>><?php esc_html_e('Flat Design', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="minimal" <?php selected($this->settings['design_preset'], 'minimal'); ?>><?php esc_html_e('Minimal', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="glass" <?php selected($this->settings['design_preset'], 'glass'); ?>><?php esc_html_e('Glassmorphism', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="custom" <?php selected($this->settings['design_preset'], 'custom'); ?>><?php esc_html_e('Custom', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[design_preset]" id="ainfn_design_preset">
+                                            <option value="modern" <?php selected($this->settings['design_preset'], 'modern'); ?>><?php esc_html_e('Modern Gradient', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="flat" <?php selected($this->settings['design_preset'], 'flat'); ?>><?php esc_html_e('Flat Design', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="minimal" <?php selected($this->settings['design_preset'], 'minimal'); ?>><?php esc_html_e('Minimal', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="glass" <?php selected($this->settings['design_preset'], 'glass'); ?>><?php esc_html_e('Glassmorphism', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="custom" <?php selected($this->settings['design_preset'], 'custom'); ?>><?php esc_html_e('Custom', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
-                                        <p class="description"><?php esc_html_e('Choose a design preset or select Custom to use your own colors', 'floating-notices-for-woocommerce'); ?></p>
+                                        <p class="description"><?php esc_html_e('Choose a design preset or select Custom to use your own colors', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_border_radius"><?php esc_html_e('Border Radius (px)', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_border_radius"><?php esc_html_e('Border Radius (px)', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <input type="range" name="wfn_settings[border_radius]" id="wfn_border_radius" 
+                                        <input type="range" name="ainfn_settings[border_radius]" id="ainfn_border_radius" 
                                                value="<?php echo esc_attr($this->settings['border_radius']); ?>" 
                                                min="0" max="30" />
                                         <span id="border_radius_value"><?php echo esc_attr($this->settings['border_radius']); ?>px</span>
@@ -1543,10 +1535,10 @@ class WooCommerce_Floating_Notices {
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_padding"><?php esc_html_e('Padding (px)', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_padding"><?php esc_html_e('Padding (px)', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <input type="range" name="wfn_settings[padding]" id="wfn_padding" 
+                                        <input type="range" name="ainfn_settings[padding]" id="ainfn_padding" 
                                                value="<?php echo esc_attr($this->settings['padding']); ?>" 
                                                min="8" max="30" />
                                         <span id="padding_value"><?php echo esc_attr($this->settings['padding']); ?>px</span>
@@ -1555,15 +1547,15 @@ class WooCommerce_Floating_Notices {
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_shadow_style"><?php esc_html_e('Shadow Style', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_shadow_style"><?php esc_html_e('Shadow Style', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[shadow_style]" id="wfn_shadow_style">
-                                            <option value="none" <?php selected($this->settings['shadow_style'], 'none'); ?>><?php esc_html_e('None', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="small" <?php selected($this->settings['shadow_style'], 'small'); ?>><?php esc_html_e('Small', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="medium" <?php selected($this->settings['shadow_style'], 'medium'); ?>><?php esc_html_e('Medium', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="large" <?php selected($this->settings['shadow_style'], 'large'); ?>><?php esc_html_e('Large', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="xl" <?php selected($this->settings['shadow_style'], 'xl'); ?>><?php esc_html_e('Extra Large', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[shadow_style]" id="ainfn_shadow_style">
+                                            <option value="none" <?php selected($this->settings['shadow_style'], 'none'); ?>><?php esc_html_e('None', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="small" <?php selected($this->settings['shadow_style'], 'small'); ?>><?php esc_html_e('Small', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="medium" <?php selected($this->settings['shadow_style'], 'medium'); ?>><?php esc_html_e('Medium', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="large" <?php selected($this->settings['shadow_style'], 'large'); ?>><?php esc_html_e('Large', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="xl" <?php selected($this->settings['shadow_style'], 'xl'); ?>><?php esc_html_e('Extra Large', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
@@ -1571,15 +1563,15 @@ class WooCommerce_Floating_Notices {
                         </div>
                         
                         <!-- Colors Settings Tab -->
-                        <div id="colors-settings" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Color Settings', 'floating-notices-for-woocommerce'); ?></h2>
+                        <div id="colors-settings" class="ainfn-tab-content">
+                            <h2><?php esc_html_e('Color Settings', 'all-in-floating-notices-for-woocommerce'); ?></h2>
                             
                             <?php
                             $notice_types = array(
-                                'success' => __('Success Notices', 'floating-notices-for-woocommerce'),
-                                'error' => __('Error Notices', 'floating-notices-for-woocommerce'),
-                                'info' => __('Info Notices', 'floating-notices-for-woocommerce'),
-                                'warning' => __('Warning Notices', 'floating-notices-for-woocommerce'),
+                                'success' => __('Success Notices', 'all-in-floating-notices-for-woocommerce'),
+                                'error' => __('Error Notices', 'all-in-floating-notices-for-woocommerce'),
+                                'info' => __('Info Notices', 'all-in-floating-notices-for-woocommerce'),
+                                'warning' => __('Warning Notices', 'all-in-floating-notices-for-woocommerce'),
                             );
                             
                             foreach ($notice_types as $type => $label) : ?>
@@ -1587,53 +1579,53 @@ class WooCommerce_Floating_Notices {
                                 <table class="form-table">
                                     <tr>
                                         <th scope="row">
-                                            <label><?php esc_html_e('Background Type', 'floating-notices-for-woocommerce'); ?></label>
+                                            <label><?php esc_html_e('Background Type', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                         </th>
                                         <td>
-                                            <select name="wfn_settings[<?php echo esc_attr($type); ?>_bg_type]" class="wfn-bg-type" data-type="<?php echo esc_attr($type); ?>">
-                                                <option value="solid" <?php selected($this->settings[$type . '_bg_type'], 'solid'); ?>><?php esc_html_e('Solid Color', 'floating-notices-for-woocommerce'); ?></option>
-                                                <option value="gradient" <?php selected($this->settings[$type . '_bg_type'], 'gradient'); ?>><?php esc_html_e('Gradient', 'floating-notices-for-woocommerce'); ?></option>
+                                            <select name="ainfn_settings[<?php echo esc_attr($type); ?>_bg_type]" class="ainfn-bg-type" data-type="<?php echo esc_attr($type); ?>">
+                                                <option value="solid" <?php selected($this->settings[$type . '_bg_type'], 'solid'); ?>><?php esc_html_e('Solid Color', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                                <option value="gradient" <?php selected($this->settings[$type . '_bg_type'], 'gradient'); ?>><?php esc_html_e('Gradient', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                             </select>
                                         </td>
                                     </tr>
                                     
                                     <tr>
                                         <th scope="row">
-                                            <label><?php esc_html_e('Background Color', 'floating-notices-for-woocommerce'); ?></label>
+                                            <label><?php esc_html_e('Background Color', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                         </th>
                                         <td>
-                                            <input type="text" name="wfn_settings[<?php echo esc_attr($type); ?>_bg_color1]" 
+                                            <input type="text" name="ainfn_settings[<?php echo esc_attr($type); ?>_bg_color1]" 
                                                    value="<?php echo esc_attr($this->settings[$type . '_bg_color1']); ?>" 
-                                                   class="wfn-color-picker" />
-                                            <span class="wfn-gradient-color2" style="<?php echo ($this->settings[$type . '_bg_type'] !== 'gradient') ? 'display:none;' : ''; ?>">
-                                                <label><?php esc_html_e('Gradient End Color', 'floating-notices-for-woocommerce'); ?></label>
-                                                <input type="text" name="wfn_settings[<?php echo esc_attr($type); ?>_bg_color2]" 
+                                                   class="ainfn-color-picker" />
+                                            <span class="ainfn-gradient-color2" style="<?php echo ($this->settings[$type . '_bg_type'] !== 'gradient') ? 'display:none;' : ''; ?>">
+                                                <label><?php esc_html_e('Gradient End Color', 'all-in-floating-notices-for-woocommerce'); ?></label>
+                                                <input type="text" name="ainfn_settings[<?php echo esc_attr($type); ?>_bg_color2]" 
                                                        value="<?php echo esc_attr($this->settings[$type . '_bg_color2']); ?>" 
-                                                       class="wfn-color-picker" />
+                                                       class="ainfn-color-picker" />
                                             </span>
                                         </td>
                                     </tr>
                                     
                                     <tr>
                                         <th scope="row">
-                                            <label><?php esc_html_e('Text Color', 'floating-notices-for-woocommerce'); ?></label>
+                                            <label><?php esc_html_e('Text Color', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                         </th>
                                         <td>
-                                            <input type="text" name="wfn_settings[<?php echo esc_attr($type); ?>_text_color]" 
+                                            <input type="text" name="ainfn_settings[<?php echo esc_attr($type); ?>_text_color]" 
                                                    value="<?php echo esc_attr($this->settings[$type . '_text_color']); ?>" 
-                                                   class="wfn-color-picker" />
+                                                   class="ainfn-color-picker" />
                                         </td>
                                     </tr>
                                     
                                     <tr>
                                         <th scope="row">
-                                            <label><?php esc_html_e('Icon Background', 'floating-notices-for-woocommerce'); ?></label>
+                                            <label><?php esc_html_e('Icon Background', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                         </th>
                                         <td>
-                                            <input type="text" name="wfn_settings[<?php echo esc_attr($type); ?>_icon_bg]" 
+                                            <input type="text" name="ainfn_settings[<?php echo esc_attr($type); ?>_icon_bg]" 
                                                    value="<?php echo esc_attr($this->settings[$type . '_icon_bg']); ?>" 
-                                                   class="wfn-color-picker-alpha" />
-                                            <p class="description"><?php esc_html_e('Use rgba values for transparency, e.g., rgba(255,255,255,0.2)', 'floating-notices-for-woocommerce'); ?></p>
+                                                   class="ainfn-color-picker-alpha" />
+                                            <p class="description"><?php esc_html_e('Use rgba values for transparency, e.g., rgba(255,255,255,0.2)', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                         </td>
                                     </tr>
                                 </table>
@@ -1642,33 +1634,33 @@ class WooCommerce_Floating_Notices {
                         </div>
                         
                         <!-- Typography Settings Tab -->
-                        <div id="typography-settings" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Typography Settings', 'floating-notices-for-woocommerce'); ?></h2>
+                        <div id="typography-settings" class="ainfn-tab-content">
+                            <h2><?php esc_html_e('Typography Settings', 'all-in-floating-notices-for-woocommerce'); ?></h2>
                             
                             <table class="form-table">
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_font_family"><?php esc_html_e('Font Family', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_font_family"><?php esc_html_e('Font Family', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[font_family]" id="wfn_font_family">
-                                            <option value="inherit" <?php selected($this->settings['font_family'], 'inherit'); ?>><?php esc_html_e('Theme Default', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" <?php selected($this->settings['font_family'], "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"); ?>><?php esc_html_e('System Font', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="'Helvetica Neue', Helvetica, Arial, sans-serif" <?php selected($this->settings['font_family'], "'Helvetica Neue', Helvetica, Arial, sans-serif"); ?>><?php esc_html_e('Helvetica', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="Georgia, serif" <?php selected($this->settings['font_family'], "Georgia, serif"); ?>><?php esc_html_e('Georgia', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="'Courier New', monospace" <?php selected($this->settings['font_family'], "'Courier New', monospace"); ?>><?php esc_html_e('Courier', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="'Inter', sans-serif" <?php selected($this->settings['font_family'], "'Inter', sans-serif"); ?>><?php esc_html_e('Inter', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="'Poppins', sans-serif" <?php selected($this->settings['font_family'], "'Poppins', sans-serif"); ?>><?php esc_html_e('Poppins', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[font_family]" id="ainfn_font_family">
+                                            <option value="inherit" <?php selected($this->settings['font_family'], 'inherit'); ?>><?php esc_html_e('Theme Default', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" <?php selected($this->settings['font_family'], "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"); ?>><?php esc_html_e('System Font', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="'Helvetica Neue', Helvetica, Arial, sans-serif" <?php selected($this->settings['font_family'], "'Helvetica Neue', Helvetica, Arial, sans-serif"); ?>><?php esc_html_e('Helvetica', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="Georgia, serif" <?php selected($this->settings['font_family'], "Georgia, serif"); ?>><?php esc_html_e('Georgia', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="'Courier New', monospace" <?php selected($this->settings['font_family'], "'Courier New', monospace"); ?>><?php esc_html_e('Courier', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="'Inter', sans-serif" <?php selected($this->settings['font_family'], "'Inter', sans-serif"); ?>><?php esc_html_e('Inter', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="'Poppins', sans-serif" <?php selected($this->settings['font_family'], "'Poppins', sans-serif"); ?>><?php esc_html_e('Poppins', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_font_size"><?php esc_html_e('Font Size (px)', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_font_size"><?php esc_html_e('Font Size (px)', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <input type="range" name="wfn_settings[font_size]" id="wfn_font_size" 
+                                        <input type="range" name="ainfn_settings[font_size]" id="ainfn_font_size" 
                                                value="<?php echo esc_attr($this->settings['font_size']); ?>" 
                                                min="10" max="20" />
                                         <span id="font_size_value"><?php echo esc_attr($this->settings['font_size']); ?>px</span>
@@ -1677,73 +1669,56 @@ class WooCommerce_Floating_Notices {
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_font_weight"><?php esc_html_e('Font Weight', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_font_weight"><?php esc_html_e('Font Weight', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[font_weight]" id="wfn_font_weight">
-                                            <option value="300" <?php selected($this->settings['font_weight'], '300'); ?>><?php esc_html_e('Light (300)', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="400" <?php selected($this->settings['font_weight'], '400'); ?>><?php esc_html_e('Normal (400)', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="500" <?php selected($this->settings['font_weight'], '500'); ?>><?php esc_html_e('Medium (500)', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="600" <?php selected($this->settings['font_weight'], '600'); ?>><?php esc_html_e('Semi Bold (600)', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="700" <?php selected($this->settings['font_weight'], '700'); ?>><?php esc_html_e('Bold (700)', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[font_weight]" id="ainfn_font_weight">
+                                            <option value="300" <?php selected($this->settings['font_weight'], '300'); ?>><?php esc_html_e('Light (300)', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="400" <?php selected($this->settings['font_weight'], '400'); ?>><?php esc_html_e('Normal (400)', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="500" <?php selected($this->settings['font_weight'], '500'); ?>><?php esc_html_e('Medium (500)', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="600" <?php selected($this->settings['font_weight'], '600'); ?>><?php esc_html_e('Semi Bold (600)', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="700" <?php selected($this->settings['font_weight'], '700'); ?>><?php esc_html_e('Bold (700)', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                                 
                                 <tr>
                                     <th scope="row">
-                                        <label for="wfn_text_transform"><?php esc_html_e('Text Transform', 'floating-notices-for-woocommerce'); ?></label>
+                                        <label for="ainfn_text_transform"><?php esc_html_e('Text Transform', 'all-in-floating-notices-for-woocommerce'); ?></label>
                                     </th>
                                     <td>
-                                        <select name="wfn_settings[text_transform]" id="wfn_text_transform">
-                                            <option value="none" <?php selected($this->settings['text_transform'], 'none'); ?>><?php esc_html_e('None', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="uppercase" <?php selected($this->settings['text_transform'], 'uppercase'); ?>><?php esc_html_e('UPPERCASE', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="lowercase" <?php selected($this->settings['text_transform'], 'lowercase'); ?>><?php esc_html_e('lowercase', 'floating-notices-for-woocommerce'); ?></option>
-                                            <option value="capitalize" <?php selected($this->settings['text_transform'], 'capitalize'); ?>><?php esc_html_e('Capitalize', 'floating-notices-for-woocommerce'); ?></option>
+                                        <select name="ainfn_settings[text_transform]" id="ainfn_text_transform">
+                                            <option value="none" <?php selected($this->settings['text_transform'], 'none'); ?>><?php esc_html_e('None', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="uppercase" <?php selected($this->settings['text_transform'], 'uppercase'); ?>><?php esc_html_e('UPPERCASE', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="lowercase" <?php selected($this->settings['text_transform'], 'lowercase'); ?>><?php esc_html_e('lowercase', 'all-in-floating-notices-for-woocommerce'); ?></option>
+                                            <option value="capitalize" <?php selected($this->settings['text_transform'], 'capitalize'); ?>><?php esc_html_e('Capitalize', 'all-in-floating-notices-for-woocommerce'); ?></option>
                                         </select>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <!-- Custom CSS Tab -->
-                        <div id="custom-css" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Custom CSS', 'floating-notices-for-woocommerce'); ?></h2>
-                            
-                            <table class="form-table">
-                                <tr>
-                                    <th scope="row">
-                                        <label for="wfn_custom_css"><?php esc_html_e('Additional CSS', 'floating-notices-for-woocommerce'); ?></label>
-                                    </th>
-                                    <td>
-                                        <textarea name="wfn_settings[custom_css]" id="wfn_custom_css" rows="15" cols="70" class="large-text code"><?php echo esc_textarea($this->settings['custom_css']); ?></textarea>
-                                        <p class="description"><?php esc_html_e('Add custom CSS to override default styles. Use .floating-notice for the main container.', 'floating-notices-for-woocommerce'); ?></p>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                         
                         <!-- Preview Tab -->
-                        <div id="preview" class="wfn-tab-content">
-                            <h2><?php esc_html_e('Live Preview', 'floating-notices-for-woocommerce'); ?></h2>
+                        <div id="preview" class="ainfn-tab-content">
+                            <h2><?php esc_html_e('Live Preview', 'all-in-floating-notices-for-woocommerce'); ?></h2>
                             
-                            <div class="wfn-preview-container">
-                                <p><?php esc_html_e('Click the buttons below to preview different notice types with your current settings:', 'floating-notices-for-woocommerce'); ?></p>
+                            <div class="ainfn-preview-container">
+                                <p><?php esc_html_e('Click the buttons below to preview different notice types with your current settings:', 'all-in-floating-notices-for-woocommerce'); ?></p>
                                 
-                                <div class="wfn-preview-buttons">
-                                    <button type="button" class="button button-success" onclick="wfnPreviewNotice('success')"><?php esc_html_e('Preview Success', 'floating-notices-for-woocommerce'); ?></button>
-                                    <button type="button" class="button button-error" onclick="wfnPreviewNotice('error')"><?php esc_html_e('Preview Error', 'floating-notices-for-woocommerce'); ?></button>
-                                    <button type="button" class="button button-info" onclick="wfnPreviewNotice('info')"><?php esc_html_e('Preview Info', 'floating-notices-for-woocommerce'); ?></button>
-                                    <button type="button" class="button button-warning" onclick="wfnPreviewNotice('warning')"><?php esc_html_e('Preview Warning', 'floating-notices-for-woocommerce'); ?></button>
+                                <div class="ainfn-preview-buttons">
+                                    <button type="button" class="button button-success" data-ainfn-preview="success"><?php esc_html_e('Preview Success', 'all-in-floating-notices-for-woocommerce'); ?></button>
+                                    <button type="button" class="button button-error" data-ainfn-preview="error"><?php esc_html_e('Preview Error', 'all-in-floating-notices-for-woocommerce'); ?></button>
+                                    <button type="button" class="button button-info" data-ainfn-preview="info"><?php esc_html_e('Preview Info', 'all-in-floating-notices-for-woocommerce'); ?></button>
+                                    <button type="button" class="button button-warning" data-ainfn-preview="warning"><?php esc_html_e('Preview Warning', 'all-in-floating-notices-for-woocommerce'); ?></button>
                                 </div>
                                 
-                                <div id="wfn-preview-area" style="position: relative; min-height: 200px; background: #f5f5f5; border: 1px solid #ddd; margin-top: 20px; border-radius: 8px;">
+                                <div id="ainfn-preview-area" style="position: relative; min-height: 200px; background: #f5f5f5; border: 1px solid #ddd; margin-top: 20px; border-radius: 8px;">
                                     <!-- Preview notices will appear here -->
                                 </div>
                             </div>
                         </div>
                         
-                        <?php submit_button(__('Save All Settings', 'floating-notices-for-woocommerce'), 'primary', 'submit', true, array('id' => 'wfn-save-settings')); ?>
+                        <?php submit_button(__('Save All Settings', 'all-in-floating-notices-for-woocommerce'), 'primary', 'submit', true, array('id' => 'ainfn-save-settings')); ?>
                     </form>
                 </div>
             </div>
@@ -1756,7 +1731,7 @@ class WooCommerce_Floating_Notices {
      * Add plugin action links
      */
     public function add_action_links($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=wfn-settings') . '">' . __('Settings', 'floating-notices-for-woocommerce') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=ainfn-settings') . '">' . __('Settings', 'all-in-floating-notices-for-woocommerce') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
     }
@@ -1765,14 +1740,14 @@ class WooCommerce_Floating_Notices {
      * AJAX save settings handler
      */
     public function ajax_save_settings() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
         }
 
         if (isset($_POST['settings'])) {
-            update_option('wfn_settings', $this->sanitize_settings(wp_unslash($_POST['settings']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by the dedicated sanitize_* method.
+            update_option('ainfn_settings', $this->sanitize_settings(wp_unslash($_POST['settings']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized by the dedicated sanitize_* method.
             wp_send_json_success('Settings saved');
         }
 
@@ -1834,7 +1809,7 @@ class WooCommerce_Floating_Notices {
      * AJAX save notification config handler
      */
     public function ajax_save_notification_config() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -1842,7 +1817,7 @@ class WooCommerce_Floating_Notices {
 
         // "Reset to Defaults" sends a reset flag instead of a config array
         if (!empty($_POST['reset'])) {
-            delete_option('wfn_notification_config');
+            delete_option('ainfn_notification_config');
             unset( $this->cache['notification_config'] );
             wp_send_json_success('Notification configuration reset');
         }
@@ -1889,7 +1864,7 @@ class WooCommerce_Floating_Notices {
      * AJAX add custom notification handler
      */
     public function ajax_add_custom_notification() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -1917,7 +1892,7 @@ class WooCommerce_Floating_Notices {
      * AJAX update custom notification handler
      */
     public function ajax_update_custom_notification() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -1949,7 +1924,7 @@ class WooCommerce_Floating_Notices {
      * AJAX delete custom notification handler
      */
     public function ajax_delete_custom_notification() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -1977,7 +1952,7 @@ class WooCommerce_Floating_Notices {
      * @return bool
      */
     private function guest_detection_allowed() {
-        return (bool) apply_filters('wfn_allow_guest_notice_detection', false);
+        return (bool) apply_filters('ainfn_allow_guest_notice_detection', false);
     }
 
     /**
@@ -1995,7 +1970,7 @@ class WooCommerce_Floating_Notices {
 
     public function ajax_save_detected_notification() {
         // Verify nonce to prevent abuse
-        if ( ! check_ajax_referer( 'wfn_frontend_nonce', 'nonce', false ) ) {
+        if ( ! check_ajax_referer( 'ainfn_frontend_nonce', 'nonce', false ) ) {
             wp_send_json_error( 'Invalid nonce' );
         }
         if ( ! $this->can_detect_notifications() ) {
@@ -2011,7 +1986,7 @@ class WooCommerce_Floating_Notices {
 
             // Rate limit: only allow saving once per message per 5 minutes
             $hash = md5($message);
-            $transient_key = 'wfn_detect_' . $hash;
+            $transient_key = 'ainfn_detect_' . $hash;
             if ( get_transient( $transient_key ) ) {
                 wp_send_json_success(array(
                     'hash' => $hash,
@@ -2035,7 +2010,7 @@ class WooCommerce_Floating_Notices {
      * AJAX update detected notification handler
      */
     public function ajax_update_detected_notification() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -2096,7 +2071,7 @@ class WooCommerce_Floating_Notices {
      * AJAX delete detected notification handler
      */
     public function ajax_delete_detected_notification() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -2119,7 +2094,7 @@ class WooCommerce_Floating_Notices {
      * AJAX scan plugins handler
      */
     public function ajax_scan_plugins() {
-        check_ajax_referer('wfn_admin_nonce', 'nonce');
+        check_ajax_referer('ainfn_admin_nonce', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Insufficient permissions');
@@ -2129,14 +2104,14 @@ class WooCommerce_Floating_Notices {
 
         wp_send_json_success(array(
             /* translators: %d: number of notifications found */
-            'message' => sprintf(__('%d notification(s) found and imported', 'floating-notices-for-woocommerce'), $count),
+            'message' => sprintf(__('%d notification(s) found and imported', 'all-in-floating-notices-for-woocommerce'), $count),
             'count' => $count,
         ));
     }
 
     /**
      * Shortcode to display custom notification
-     * Usage: [wfn_show id="custom_xxx"] or [wfn_show name="My Notification"]
+     * Usage: [ainfn_show id="custom_xxx"] or [ainfn_show name="My Notification"]
      */
     public function shortcode_show_notification($atts) {
         $atts = shortcode_atts(array(
@@ -2145,7 +2120,7 @@ class WooCommerce_Floating_Notices {
         ), $atts);
 
         if (empty($atts['id']) && empty($atts['name'])) {
-            return '<!-- WFN: ID or name required -->';
+            return '<!-- AINFN: ID or name required -->';
         }
 
         $custom_notifications = $this->get_custom_notifications();
@@ -2168,51 +2143,41 @@ class WooCommerce_Floating_Notices {
         }
 
         if (!$notification || !$notification['enabled']) {
-            return '<!-- WFN: Notification not found or disabled -->';
+            return '<!-- AINFN: Notification not found or disabled -->';
         }
 
-        // Output inline script to trigger notification
-        ob_start();
-        ?>
-        <script type="text/javascript">
-        (function() {
-            if (typeof WooFloatingNotices !== 'undefined') {
-                WooFloatingNotices.createNotice(
-                    <?php echo wp_json_encode($notification['message']); ?>,
-                    <?php echo wp_json_encode($notification['type']); ?>,
-                    <?php echo wp_json_encode(array(
-                        'auto_dismiss' => isset($notification['auto_dismiss']) ? $notification['auto_dismiss'] : 5000,
-                        'desktop_position' => isset($notification['desktop_position']) ? $notification['desktop_position'] : 'top-right',
-                        'mobile_position' => isset($notification['mobile_position']) ? $notification['mobile_position'] : 'top-full',
-                    )); ?>
-                );
-            } else {
-                // Queue for when WooFloatingNotices loads
-                document.addEventListener('DOMContentLoaded', function() {
-                    if (typeof WooFloatingNotices !== 'undefined') {
-                        WooFloatingNotices.createNotice(
-                            <?php echo wp_json_encode($notification['message']); ?>,
-                            <?php echo wp_json_encode($notification['type']); ?>,
-                            <?php echo wp_json_encode(array(
-                                'auto_dismiss' => isset($notification['auto_dismiss']) ? $notification['auto_dismiss'] : 5000,
-                                'desktop_position' => isset($notification['desktop_position']) ? $notification['desktop_position'] : 'top-right',
-                                'mobile_position' => isset($notification['mobile_position']) ? $notification['mobile_position'] : 'top-full',
-                            )); ?>
-                        );
-                    }
-                });
-            }
-        })();
-        </script>
-        <?php
-        return ob_get_clean();
+        $config = array(
+            'auto_dismiss'     => isset($notification['auto_dismiss']) ? intval($notification['auto_dismiss']) : 5000,
+            'desktop_position' => isset($notification['desktop_position']) ? sanitize_key($notification['desktop_position']) : 'top-right',
+            'mobile_position'  => isset($notification['mobile_position']) ? sanitize_key($notification['mobile_position']) : 'top-full',
+        );
+
+        // Queue the notice on the enqueued front-end script with
+        // wp_add_inline_script() instead of printing a <script> tag.
+        if (!wp_script_is('ainfn-script', 'enqueued')) {
+            $this->enqueue_assets();
+        }
+        if (wp_script_is('ainfn-script', 'enqueued')) {
+            $json_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+            wp_add_inline_script(
+                'ainfn-script',
+                sprintf(
+                    'jQuery(function(){if(window.AinfnFloatingNotices){window.AinfnFloatingNotices.createNotice(%1$s,%2$s,%3$s);}});',
+                    wp_json_encode($notification['message'], $json_flags),
+                    wp_json_encode($notification['type'], $json_flags),
+                    wp_json_encode($config, $json_flags)
+                )
+            );
+        }
+
+        return '';
     }
 
     /**
      * AJAX handler to show custom notification
      */
     public function ajax_show_custom_notification() {
-        if ( ! check_ajax_referer( 'wfn_frontend_nonce', 'nonce', false ) ) {
+        if ( ! check_ajax_referer( 'ainfn_frontend_nonce', 'nonce', false ) ) {
             wp_send_json_error( 'Invalid nonce' );
         }
 
@@ -2253,7 +2218,7 @@ class WooCommerce_Floating_Notices {
 }
 
 // Initialize plugin
-add_action('plugins_loaded', array('WooCommerce_Floating_Notices', 'get_instance'));
+add_action('plugins_loaded', array('AINFN_Floating_Notices', 'get_instance'));
 
 // Declare compatibility with WooCommerce High-Performance Order Storage (HPOS)
 add_action('before_woocommerce_init', function() {
@@ -2263,8 +2228,8 @@ add_action('before_woocommerce_init', function() {
 });
 
 // Activation hook
-register_activation_hook(__FILE__, 'wfn_activation');
-function wfn_activation() {
+register_activation_hook(__FILE__, 'ainfn_activation');
+function ainfn_activation() {
     // Create default settings with new design options
     $defaults = array(
         'enabled' => 'yes',
@@ -2309,18 +2274,17 @@ function wfn_activation() {
         'warning_text_color' => '#ffffff',
         'warning_icon_bg' => 'rgba(255,255,255,0.2)',
         
-        'custom_css' => '',
     );
     
-    if (!get_option('wfn_settings')) {
-        add_option('wfn_settings', $defaults);
+    if (!get_option('ainfn_settings')) {
+        add_option('ainfn_settings', $defaults);
     }
 }
 
 // Deactivation hook
-register_deactivation_hook(__FILE__, 'wfn_deactivation');
-function wfn_deactivation() {
-    // Clean up transients (both value and timeout rows)
-    global $wpdb;
-    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_wfn\\_%' OR option_name LIKE '\\_transient\\_timeout\\_wfn\\_%'");
+register_deactivation_hook(__FILE__, 'ainfn_deactivation');
+function ainfn_deactivation() {
+    // Remove the cached dynamic CSS. The short-lived (5 minute) detection
+    // throttle transients expire on their own.
+    delete_transient('ainfn_dynamic_css');
 }

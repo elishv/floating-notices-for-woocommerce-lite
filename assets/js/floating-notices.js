@@ -1,5 +1,5 @@
 /**
- * Floating Notices for WooCommerce - JavaScript
+ * All-IN Floating Notices for WooCommerce - JavaScript
  * Version: 1.0.0
  */
 
@@ -7,22 +7,22 @@
     'use strict';
     
     // Plugin object
-    var WooFloatingNotices = {
+    var AinfnFloatingNotices = {
 
         // Settings from localized script
-        settings: window.wfn_params || {},
+        settings: window.ainfn_params || {},
 
         // Notification configuration
-        notificationConfig: (window.wfn_params && window.wfn_params.notification_config) || {},
+        notificationConfig: (window.ainfn_params && window.ainfn_params.notification_config) || {},
 
         // Custom notifications
-        customNotifications: (window.wfn_params && window.wfn_params.custom_notifications) || {},
+        customNotifications: (window.ainfn_params && window.ainfn_params.custom_notifications) || {},
 
         // Detected notifications
-        detectedNotifications: (window.wfn_params && window.wfn_params.detected_notifications) || {},
+        detectedNotifications: (window.ainfn_params && window.ainfn_params.detected_notifications) || {},
 
         // Auto-detection enabled
-        enableAutoDetection: (window.wfn_params && window.wfn_params.enable_auto_detection) || false,
+        enableAutoDetection: (window.ainfn_params && window.ainfn_params.enable_auto_detection) || false,
 
         // Containers keyed by "desktopPosition|mobilePosition"
         containers: {},
@@ -152,7 +152,7 @@
                 return; // Don't show disabled notifications
             }
 
-            var id = 'wfn-notice-' + (++this.noticeCounter);
+            var id = 'ainfn-notice-' + (++this.noticeCounter);
             var icon = this.getIcon(type);
 
             // Determine animation style
@@ -258,7 +258,7 @@
         displayCustomNotification: function(notificationId) {
             var notification = this.customNotifications[notificationId];
             if (!notification || this.isDisabled(notification)) {
-                console.log('WFN: Custom notification not found or disabled:', notificationId);
+                console.log('AINFN: Custom notification not found or disabled:', notificationId);
                 return;
             }
 
@@ -397,7 +397,7 @@
                 url: this.settings.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wfn_save_detected_notification',
+                    action: 'ainfn_save_detected_notification',
                     nonce: this.settings.nonce,
                     message: message,
                     type: type
@@ -588,7 +588,7 @@
     // Initialize when DOM is ready
     $(document).ready(function() {
         // Initialize on all pages (for custom notifications) but only intercept WooCommerce notices on WooCommerce pages
-        WooFloatingNotices.init();
+        AinfnFloatingNotices.init();
     });
 
     // Also initialize after page fully loads (for late-loading elements)
@@ -596,18 +596,18 @@
         // Only intercept WooCommerce notices on WooCommerce pages
         if ($('body').hasClass('woocommerce') || $('body').hasClass('woocommerce-page') || $('.woocommerce').length) {
             setTimeout(function() {
-                WooFloatingNotices.interceptNotices();
+                AinfnFloatingNotices.interceptNotices();
             }, 500);
         }
     });
     
     // Expose to global scope for debugging and custom notification triggering
-    window.WooFloatingNotices = WooFloatingNotices;
+    window.AinfnFloatingNotices = AinfnFloatingNotices;
 
     // Expose function to display custom notifications
-    window.wfnDisplayCustomNotification = function(notificationId) {
-        if (WooFloatingNotices.displayCustomNotification) {
-            WooFloatingNotices.displayCustomNotification(notificationId);
+    window.ainfnDisplayCustomNotification = function(notificationId) {
+        if (AinfnFloatingNotices.displayCustomNotification) {
+            AinfnFloatingNotices.displayCustomNotification(notificationId);
         }
     };
 
